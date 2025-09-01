@@ -120,11 +120,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                 // Re-initialize edit buttons for the new element and its children
                 addNavEditButtons();
+                initializeNavigation();
                 saveWiki();
             }
         });
-        // Add the button after the main list
-        mainUl.insertAdjacentElement('afterend', addChapterBtn);
+        const h3 = sideNav.querySelector('h3');
+        h3.insertAdjacentElement('afterend', addChapterBtn);
 
         const items = document.querySelectorAll('#side-nav li');
         items.forEach(li => {
@@ -197,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                         // Re-initialize buttons to cover the new element
                         addNavEditButtons();
+                        initializeNavigation();
                         saveWiki();
                     }
                 });
@@ -229,6 +231,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                         // Re-initialize buttons to cover the new element
                         addNavEditButtons();
+                        initializeNavigation();
                         saveWiki();
                     }
                 });
