@@ -266,7 +266,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                         updateNavSelectionUI();
                     }
                     saveWiki();
-                    toggleEditingMode('delete'); // Exit delete mode
                 }
             } else if (mode === 'rename') {
                 showRenameItemWorkflow(li);
@@ -279,7 +278,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     icon.classList.toggle('fa-eye', !isHidden);
                     icon.classList.toggle('fa-eye-slash', isHidden);
                 }
-                toggleEditingMode('hide'); // Exit hide mode
             }
         }
 
@@ -287,43 +285,40 @@ document.addEventListener('DOMContentLoaded', async function() {
             const editorMainView = document.getElementById('editor-main-view');
             const isWorkflowActive = editorMainView.classList.contains('hidden');
 
-            // Reset buttons state
-            [renameBtn, deleteBtn, toggleHideBtn, addChapterBtn, addItemBtn].forEach(btn => {
-                btn.disabled = false;
+            const allButtons = [renameBtn, deleteBtn, toggleHideBtn, addChapterBtn, addItemBtn];
+            allButtons.forEach(btn => {
+                btn.disabled = true;
                 btn.classList.remove('active');
             });
+
             renameBtn.textContent = 'Renommer';
             deleteBtn.textContent = 'Supprimer';
             toggleHideBtn.textContent = 'Cacher/Afficher';
 
             if (isWorkflowActive) {
-                // When a workflow is active, disable all main buttons
-                [renameBtn, deleteBtn, toggleHideBtn, addChapterBtn, addItemBtn].forEach(btn => {
-                    btn.disabled = true;
-                });
                 return;
             }
 
             if (currentEditingMode) {
-                // A mode is active, disable all buttons except the one that can cancel the mode
-                [addChapterBtn, addItemBtn].forEach(btn => btn.disabled = true);
-                if (currentEditingMode !== 'rename') renameBtn.disabled = true;
-                if (currentEditingMode !== 'delete') deleteBtn.disabled = true;
-                if (currentEditingMode !== 'hide') toggleHideBtn.disabled = true;
-
-                // Update the active button
-                if (currentEditingMode === 'delete') {
-                    deleteBtn.textContent = 'Annuler';
-                    deleteBtn.classList.add('active');
-                } else if (currentEditingMode === 'rename') {
+                if (currentEditingMode === 'rename') {
+                    renameBtn.disabled = false;
                     renameBtn.textContent = 'Annuler';
                     renameBtn.classList.add('active');
+                } else if (currentEditingMode === 'delete') {
+                    deleteBtn.disabled = false;
+                    deleteBtn.textContent = 'Annuler';
+                    deleteBtn.classList.add('active');
                 } else if (currentEditingMode === 'hide') {
+                    toggleHideBtn.disabled = false;
                     toggleHideBtn.textContent = 'Terminer';
                     toggleHideBtn.classList.add('active');
                 }
             } else {
-                // No mode active, update button states based on selection
+                renameBtn.disabled = false;
+                deleteBtn.disabled = false;
+                toggleHideBtn.disabled = false;
+                addChapterBtn.disabled = false;
+
                 const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
                 const isPage = parentLi && parentLi.querySelector(':scope > a');
                 addItemBtn.disabled = !selectedItemId || isPage;
