@@ -1,10 +1,3 @@
-const GITHUB_CONFIG = {
-    owner: 'Zhaal', // Remplacer par l'utilisateur GitHub
-    repo: 'JDR',   // Remplacer par le nom du dépôt
-    filePath: 'data/wiki.json',
-    token: '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'       // Ajouter un token GitHub avec droits de commit
-};
-
 document.addEventListener('DOMContentLoaded', async function() {
     await loadSavedWiki();
     assignNavIds();
@@ -237,11 +230,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     async function saveWikiOnline() {
-        if (!GITHUB_CONFIG.token) {
-            console.warn('Token GitHub manquant, sauvegarde en ligne ignorée.');
-            return;
-        }
-
         const sideNav = document.getElementById('side-nav').cloneNode(true);
         sideNav.querySelectorAll('.edit-btn').forEach(btn => btn.remove());
         const main = document.getElementById('main-content').cloneNode(true);
@@ -252,33 +240,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             hiddenItems: JSON.parse(localStorage.getItem('hiddenItems') || '[]')
         };
 
-        const { owner, repo, filePath, token } = GITHUB_CONFIG;
-        const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
-
-        let sha;
-        const getResp = await fetch(apiUrl, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        if (getResp.ok) {
-            const info = await getResp.json();
-            sha = info.sha;
-        }
-
-        const putResp = await fetch(apiUrl, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Mise à jour du wiki',
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) ,
-                sha
-            })
+        const resp = await fetch('/.netlify/functions/saveWiki', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         });
 
-        if (!putResp.ok) {
-            throw new Error('Échec de la sauvegarde GitHub');
+        if (!resp.ok) {
+            throw new Error('Échec de la sauvegarde en ligne');
         }
     }
 
