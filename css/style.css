@@ -262,13 +262,20 @@ body.editor-mode #side-nav li:not(.hidden-item) > a {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(10, 2, 2, 0.85);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #fff;
     z-index: 1000;
+    text-shadow: 0 0 8px #ffdf7e;
+}
+
+#save-overlay p {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffdf7e;
 }
 
 #save-overlay.hidden {
@@ -276,13 +283,26 @@ body.editor-mode #side-nav li:not(.hidden-item) > a {
 }
 
 .spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 30px;
+}
+
+.spinner::before, .spinner::after {
+    content: '';
+    position: absolute;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+    inset: 0;
+    border: 3px solid transparent;
+    border-top-color: #ffdf7e;
+    animation: spin 2s linear infinite;
+}
+
+.spinner::after {
+    border-top-color: #f7a81b;
+    animation: spin 3s linear infinite reverse;
+    animation-delay: -0.5s;
 }
 
 @keyframes spin {

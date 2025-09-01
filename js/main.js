@@ -745,11 +745,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     async function saveOnline() {
+        showSaveOverlay();
         try {
             await saveWikiOnline();
-            alert('Sauvegarde manuelle effectuée.');
+            // Adding a small delay to ensure the animation is visible
+            setTimeout(() => {
+                hideSaveOverlay();
+            }, 1500); // 1.5 second delay
         } catch (e) {
+            hideSaveOverlay();
             alert('Erreur lors de la sauvegarde en ligne');
+            console.error(e);
         }
     }
 
