@@ -52,16 +52,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function initializeNavigation() {
-        const toggles = document.querySelectorAll('.category-toggle');
-        toggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
+        const sideNav = document.getElementById('side-nav');
+        if (sideNav.dataset.navListener) return; // Prevent adding multiple listeners
+
+        sideNav.addEventListener('click', function(event) {
+            const toggle = event.target.closest('.category-toggle');
+            if (toggle) {
                 toggle.classList.toggle('open');
                 const submenu = toggle.nextElementSibling;
                 if (submenu && submenu.classList.contains('submenu')) {
                     submenu.classList.toggle('open');
                 }
-            });
+            }
         });
+        sideNav.dataset.navListener = 'true';
     }
 
     function enableEditing() {
@@ -120,7 +124,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                 // Re-initialize edit buttons for the new element and its children
                 addNavEditButtons();
-                initializeNavigation();
                 saveWiki();
             }
         });
@@ -180,11 +183,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                         let submenu = li.querySelector('ul.submenu');
                         if (!submenu) {
                             submenu = document.createElement('ul');
-                            submenu.className = 'submenu open';
+                            submenu.className = 'submenu'; // It will be opened by the next lines
                             li.appendChild(submenu);
-                            // Make sure the parent toggle is open
-                            target.classList.add('open');
                         }
+                        // Make sure the parent toggle is open
+                        target.classList.add('open');
+                        submenu.classList.add('open');
 
                         const newItemLi = document.createElement('li');
                         newItemLi.dataset.id = newId;
@@ -198,7 +202,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                         // Re-initialize buttons to cover the new element
                         addNavEditButtons();
-                        initializeNavigation();
                         saveWiki();
                     }
                 });
@@ -213,11 +216,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                         let submenu = li.querySelector('ul.submenu');
                         if (!submenu) {
                             submenu = document.createElement('ul');
-                            submenu.className = 'submenu open';
+                            submenu.className = 'submenu'; // It will be opened by the next lines
                             li.appendChild(submenu);
-                             // Make sure the parent toggle is open
-                            target.classList.add('open');
                         }
+                        // Make sure the parent toggle is open
+                        target.classList.add('open');
+                        submenu.classList.add('open');
 
                         const newSubChapterLi = document.createElement('li');
                         newSubChapterLi.dataset.id = newId;
@@ -231,7 +235,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                         // Re-initialize buttons to cover the new element
                         addNavEditButtons();
-                        initializeNavigation();
                         saveWiki();
                     }
                 });
