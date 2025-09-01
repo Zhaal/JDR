@@ -156,16 +156,25 @@ footer {
 #login-button {
     padding: 5px 10px;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #login-area {
     position: absolute;
     top: 10px;
     right: 10px;
+    width: 200px;
 }
 
 #login-area input {
-    margin-right: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+#login-area div {
+    margin-bottom: 5px;
 }
 
 #edit-toolbar {
