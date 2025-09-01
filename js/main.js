@@ -70,6 +70,35 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
+    const insertImageBtn = document.getElementById('insert-image');
+    if (insertImageBtn) {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const main = document.getElementById('main-content');
+                    const container = document.createElement('div');
+                    container.className = 'image-container';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    container.appendChild(img);
+                    main.appendChild(container);
+                    addImageControls(container);
+                    saveWiki();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        insertImageBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+    }
+
     function initializeNavigation() {
         const sideNav = document.getElementById('side-nav');
         if (sideNav.dataset.navListener) return;
@@ -109,6 +138,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             mainContent.addEventListener('input', saveWiki);
         }
         addTableDeleteButtons();
+        addImageControls();
         if (!setupNavSelectionHandler) {
             setupNavSelectionHandler = initializeEditorPanel();
         }
@@ -134,6 +164,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             mainContent.removeEventListener('input', saveWiki);
         }
         document.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
+        document.querySelectorAll('.delete-image-btn').forEach(btn => btn.remove());
         if (setupNavSelectionHandler) {
             setupNavSelectionHandler(false);
         }
@@ -538,6 +569,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
+    function addImageControls(container) {
+        const containers = container ? [container] : document.querySelectorAll('#main-content .image-container');
+        containers.forEach(container => {
+            if (container.querySelector('.delete-image-btn')) return;
+            const btn = document.createElement('button');
+            btn.innerHTML = '&times;';
+            btn.className = 'delete-image-btn';
+            btn.addEventListener('click', () => {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+                    container.remove();
+                    saveWiki();
+                }
+            });
+            container.appendChild(btn);
+        });
+    }
+
     function assignNavIds() {
         const items = document.querySelectorAll('#side-nav li');
         items.forEach((li, index) => {
@@ -677,7 +725,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!currentPageId) return;
         const main = document.getElementById('main-content');
         const clone = main.cloneNode(true);
-        clone.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
+        clone.querySelectorAll('.delete-table-btn, .delete-image-btn').forEach(btn => btn.remove());
         wikiPages[currentPageId] = clone.innerHTML;
     }
 
