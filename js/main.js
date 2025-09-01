@@ -426,22 +426,25 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     async function loadSavedWiki() {
+        const sideNavContainer = document.getElementById('side-nav');
+
+        const render = (navData) => {
+            const existingUl = sideNavContainer.querySelector('ul');
+            if (existingUl) {
+                existingUl.remove();
+            }
+            renderSideNav(navData, sideNavContainer);
+        };
+
         try {
             const response = await fetch('data/wiki.json', { cache: 'no-cache' });
             if (response.ok) {
                 const data = await response.json();
                 if (data.sideNav) {
-                    const sideNavContainer = document.getElementById('side-nav');
-                    sideNavContainer.innerHTML = '<h3>POUR LES JOUEURS…</h3>';
-                    renderSideNav(data.sideNav, sideNavContainer);
+                    render(data.sideNav);
                 } else {
-                    // Fallback to localStorage if sideNav is not in the json
                     const savedNav = localStorage.getItem('sideNav');
-                    if (savedNav) {
-                        const sideNavContainer = document.getElementById('side-nav');
-                        sideNavContainer.innerHTML = '<h3>POUR LES JOUEURS…</h3>';
-                        renderSideNav(JSON.parse(savedNav), sideNavContainer);
-                    }
+                    if (savedNav) render(JSON.parse(savedNav));
                 }
                 if (data.mainContent) {
                     document.getElementById('main-content').innerHTML = data.mainContent;
@@ -457,9 +460,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         } catch (e) {
             console.warn('Chargement distant impossible, utilisation du stockage local');
         }
+
+        // Fallback for fetch failure
         const savedNav = localStorage.getItem('sideNav');
+        if (savedNav) {
+            try {
+                render(JSON.parse(savedNav));
+            } catch (jsonError) {
+                console.error("Could not parse sideNav from localStorage", jsonError);
+            }
+        }
         const savedContent = localStorage.getItem('mainContent');
-        if (savedNav) document.getElementById('side-nav').innerHTML = savedNav;
         if (savedContent) document.getElementById('main-content').innerHTML = savedContent;
     }
 
