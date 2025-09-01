@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
     let wikiPages = {};
     let currentPageId = null;
+    let setupNavSelectionHandler = null;
 
     await loadSavedWiki();
     assignNavIds();
@@ -108,7 +109,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             mainContent.addEventListener('input', saveWiki);
         }
         addTableDeleteButtons();
-        initializeEditorPanel();
+        if (!setupNavSelectionHandler) {
+            setupNavSelectionHandler = initializeEditorPanel();
+        }
+        setupNavSelectionHandler(true);
     }
 
     function disableEditing() {
@@ -130,25 +134,80 @@ document.addEventListener('DOMContentLoaded', async function() {
             mainContent.removeEventListener('input', saveWiki);
         }
         document.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
+        if (setupNavSelectionHandler) {
+            setupNavSelectionHandler(false);
+        }
     }
 
     function initializeEditorPanel() {
-        const mainView = document.getElementById('editor-main-view');
-        const workflowView = document.getElementById('editor-workflow-view');
-        const createEditBtn = document.getElementById('create-edit-btn');
         const renameBtn = document.getElementById('rename-btn');
         const deleteBtn = document.getElementById('delete-btn');
         const toggleHideBtn = document.getElementById('toggle-hide-btn');
+        const addChapterBtn = document.getElementById('add-chapter-btn');
+        const addItemBtn = document.getElementById('add-item-btn');
+        const sideNav = document.getElementById('side-nav');
 
-        let currentEditingMode = null; // 'delete', 'rename', 'hide'
-        let workflowHistory = [];
+        let currentEditingMode = null;
+        let selectedItemId = null;
+
+        // This listener is added in enableEditing and removed in disableEditing
+        let navSelectionHandler = null;
+
+        function updateNavSelectionUI() {
+            document.querySelectorAll('#side-nav li').forEach(item => {
+                item.classList.remove('selected-item');
+            });
+            if (selectedItemId) {
+                const selectedLi = document.querySelector(`#side-nav li[data-id="${selectedItemId}"]`);
+                if (selectedLi) {
+                    selectedLi.classList.add('selected-item');
+                }
+            }
+            if (addItemBtn) {
+                const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
+                const isPage = parentLi && parentLi.querySelector(':scope > a');
+                addItemBtn.disabled = !selectedItemId || isPage;
+            }
+        }
+
+        function setupNavSelection(enable) {
+            if (enable) {
+                navSelectionHandler = (event) => {
+                    // Do not trigger selection when in an item-wise editing mode
+                    if (currentEditingMode) return;
+                    // Or if an action icon was clicked
+                    if (event.target.closest('.edit-icon')) return;
+
+                    const li = event.target.closest('li');
+                    if (li && li.dataset.id) {
+                        event.stopPropagation(); // Prevent event from bubbling to parent LIs
+                        if (selectedItemId === li.dataset.id) {
+                            selectedItemId = null; // Toggle off
+                        } else {
+                            selectedItemId = li.dataset.id;
+                        }
+                        updateNavSelectionUI();
+                    }
+                };
+                sideNav.addEventListener('click', navSelectionHandler);
+            } else {
+                if (navSelectionHandler) {
+                    sideNav.removeEventListener('click', navSelectionHandler);
+                    navSelectionHandler = null;
+                }
+                selectedItemId = null;
+                updateNavSelectionUI();
+            }
+        }
 
         function toggleEditingMode(mode) {
             if (currentEditingMode === mode) {
                 currentEditingMode = null;
             } else {
                 currentEditingMode = mode;
+                selectedItemId = null; // Unselect item when entering a mode
             }
+            updateNavSelectionUI();
             updateNavItemsUI();
             updateEditorPanelUI();
         }
@@ -191,25 +250,23 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (mode === 'delete') {
                 if (confirm('Êtes-vous sûr de vouloir supprimer cet élément et tous ses enfants ?')) {
                     li.remove();
+                    if (id === selectedItemId) {
+                        selectedItemId = null;
+                        updateNavSelectionUI();
+                    }
                     saveWiki();
                 }
             } else if (mode === 'rename') {
                 const target = li.querySelector(':scope > a, :scope > .category-toggle');
                 const icon = target.querySelector('.edit-icon');
-
-                if (icon) {
-                    icon.remove();
-                }
-
+                if (icon) icon.remove();
                 const currentName = target.textContent.trim();
                 const newName = prompt('Entrez le nouveau nom :', currentName);
-
                 if (newName && newName.trim() !== '') {
                     target.textContent = newName.trim();
                     saveWiki();
                 }
-
-                updateNavItemsUI(); // Redraw all icons to ensure consistency
+                updateNavItemsUI();
             } else if (mode === 'hide') {
                 const isHidden = li.classList.toggle('hidden-item');
                 updateHiddenItems(id, isHidden);
@@ -227,10 +284,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             renameBtn.textContent = 'Renommer';
             deleteBtn.textContent = 'Supprimer';
             toggleHideBtn.textContent = 'Cacher/Afficher';
-            createEditBtn.disabled = false;
+            addChapterBtn.disabled = !!currentEditingMode;
+            addItemBtn.disabled = !!currentEditingMode || !selectedItemId;
 
             if (currentEditingMode) {
-                createEditBtn.disabled = true;
                 if (currentEditingMode === 'delete') {
                     deleteBtn.textContent = 'Annuler';
                     deleteBtn.classList.add('active');
@@ -244,89 +301,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
 
-        function renderWorkflow(state) {
-            workflowHistory.push(state);
-            workflowView.innerHTML = '';
-            mainView.classList.add('hidden');
-            workflowView.classList.remove('hidden');
-
-            const { level, parentId, parentName } = state;
-
-            if (parentName) {
-                const title = document.createElement('h4');
-                title.textContent = `Dans: ${parentName}`;
-                workflowView.appendChild(title);
-            }
-
-            const actions = {
-                chapter: { create: 'chapitre', edit: 'chapitre' },
-                subchapter: { create: 'sous-chapitre', edit: 'sous-chapitre' },
-                item: { create: 'élément', edit: 'élément' }
-            };
-
-            const createBtn = document.createElement('button');
-            createBtn.textContent = `Créer un nouveau ${actions[level].create}`;
-            createBtn.addEventListener('click', () => handleCreate(level, parentId));
-            workflowView.appendChild(createBtn);
-
-            if (level !== 'item') { // Cannot edit 'elements' to add children
-                const editBtn = document.createElement('button');
-                editBtn.textContent = `Editer un ${actions[level].edit}`;
-                editBtn.addEventListener('click', () => renderSelection(level, parentId));
-                workflowView.appendChild(editBtn);
-            }
-        }
-
-        function renderSelection(level, parentId) {
-            workflowHistory.push({ level, parentId }); // Save current state for back button
-            workflowView.innerHTML = '';
-
-            const listContainer = document.createElement('div');
-            const selector = parentId ? `li[data-id="${parentId}"] > ul > li` : '#side-nav > ul > li';
-            document.querySelectorAll(selector).forEach(li => {
-                const target = li.querySelector(':scope > .category-toggle');
-                 if (!target) return;
-
-                const itemBtn = document.createElement('button');
-                itemBtn.textContent = target.textContent.trim();
-                itemBtn.addEventListener('click', () => {
-                    const nextLevel = level === 'chapter' ? 'subchapter' : 'item';
-                    renderWorkflow({ level: nextLevel, parentId: li.dataset.id, parentName: target.textContent.trim() });
-                });
-                listContainer.appendChild(itemBtn);
-            });
-            workflowView.appendChild(listContainer);
-        }
-
-        function handleCreate(type, parentId) {
-            const name = prompt(`Nom du nouvel ${type}:`);
-            if (!name || name.trim() === '') return;
-
-            let parentUl;
-            if (!parentId) {
-                parentUl = document.querySelector('#side-nav > ul');
-            } else {
-                const parentLi = document.querySelector(`li[data-id="${parentId}"]`);
-                parentUl = parentLi.querySelector(':scope > ul');
-                if (!parentUl) {
-                    parentUl = document.createElement('ul');
-                    parentUl.className = 'submenu open';
-                    parentLi.appendChild(parentUl);
-                    const toggle = parentLi.querySelector('.category-toggle');
-                    if (toggle) toggle.classList.add('open');
-                }
-            }
-
-            const navItemType = (type === 'item') ? 'item' : 'sub-chapter'; // Simplification
-            parentUl.appendChild(createNavItem(name, navItemType));
-            saveWiki();
-
-            // Return to main editor view
-            workflowView.classList.add('hidden');
-            mainView.classList.remove('hidden');
-            workflowHistory = [];
-        }
-
         function createNavItem(name, type) {
             const li = document.createElement('li');
             li.dataset.id = Date.now().toString();
@@ -335,26 +309,62 @@ document.addEventListener('DOMContentLoaded', async function() {
                 a.href = '#';
                 a.textContent = name;
                 li.appendChild(a);
-            } else {
+                wikiPages[li.dataset.id] = `<h2>${name}</h2><p>Contenu à rédiger.</p>`;
+            } else { // category
                 const span = document.createElement('span');
                 span.className = 'category-toggle';
                 span.textContent = name;
                 li.appendChild(span);
-                 const ul = document.createElement('ul');
+                const ul = document.createElement('ul');
                 ul.className = 'submenu';
                 li.appendChild(ul);
             }
             return li;
         }
 
-        createEditBtn.addEventListener('click', () => {
-            workflowHistory = [];
-            renderWorkflow({ level: 'chapter' });
+        addChapterBtn.addEventListener('click', () => {
+            const name = prompt('Nom du nouveau chapitre:');
+            if (!name || name.trim() === '') return;
+            const parentUl = document.querySelector('#side-nav > ul');
+            const newItem = createNavItem(name, 'category');
+            parentUl.appendChild(newItem);
+            saveWiki();
+        });
+
+        addItemBtn.addEventListener('click', () => {
+            if (!selectedItemId) return;
+            const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
+            if (!parentLi || parentLi.querySelector(':scope > a')) {
+                alert("Impossible d'ajouter un sous-élément à une page.");
+                return;
+            }
+
+            const isCategory = confirm('Créer une catégorie (OK) ou une page (Annuler) ?');
+            const type = isCategory ? 'category' : 'item';
+            const name = prompt(`Nom du nouvel élément (${isCategory ? 'catégorie' : 'page'}):`);
+            if (!name || name.trim() === '') return;
+
+            let parentUl = parentLi.querySelector(':scope > ul');
+            if (!parentUl) {
+                parentUl = document.createElement('ul');
+                parentUl.className = 'submenu open';
+                parentLi.appendChild(parentUl);
+                const toggle = parentLi.querySelector('.category-toggle');
+                if (toggle) toggle.classList.add('open');
+            }
+            const newItem = createNavItem(name, type);
+            parentUl.appendChild(newItem);
+            saveWiki();
+            // After adding, maybe we should unselect
+            selectedItemId = null;
+            updateNavSelectionUI();
         });
 
         deleteBtn.addEventListener('click', () => toggleEditingMode('delete'));
         renameBtn.addEventListener('click', () => toggleEditingMode('rename'));
         toggleHideBtn.addEventListener('click', () => toggleEditingMode('hide'));
+
+        return setupNavSelection;
     }
 
     function addTableDeleteButtons() {
