@@ -8,7 +8,7 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1280px; /* Wider for sidebar */
     margin: 20px auto;
     background-color: #fff;
     border: 1px solid #ccc;
@@ -21,6 +21,7 @@ header {
     padding-bottom: 1rem;
     border-bottom: 1px solid #a7d7f9;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 header h1 {
@@ -28,37 +29,112 @@ header h1 {
     font-size: 2.5em;
 }
 
-/* Navigation bar styling */
-nav {
-    padding: 1rem 0;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 20px;
+/* --- Layout --- */
+.main-body {
+    display: flex;
+    gap: 30px; /* Space between sidebar and main content */
 }
 
-nav ul {
-    padding: 0;
+#sidebar {
+    flex: 0 0 280px; /* Sidebar width: 280px, no grow, no shrink */
+}
+
+#main-content {
+    flex: 1; /* Main content takes the rest of the space */
+}
+
+
+/* --- Sidebar Navigation --- */
+#side-nav {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 100%;
+}
+
+#side-nav h3 {
+    font-size: 1.2em;
+    color: #333;
+    margin-top: 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+#side-nav ul {
     list-style: none;
-    text-align: center;
+    padding-left: 0;
     margin: 0;
 }
 
-nav ul li {
-    display: inline;
-    margin: 0 15px;
+#side-nav ul li {
+    margin: 5px 0;
 }
 
-nav a {
-    color: #0645ad;
+/* Style for the clickable category headers */
+#side-nav .category-toggle {
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+    position: relative; /* For the arrow */
+    padding-left: 20px; /* Space for the arrow */
+}
+
+#side-nav .category-toggle:hover {
+    background-color: #e9ecef;
+}
+
+/* Arrow indicator for expandable categories */
+#side-nav .category-toggle::before {
+    content: '▶';
+    font-size: 0.8em;
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#side-nav .category-toggle.open::before {
+    transform: rotate(90deg);
+}
+
+
+/* Style for regular links */
+#side-nav a {
     text-decoration: none;
-    font-size: 1.1em;
+    color: #0645ad;
+    display: block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
 }
 
-nav a:hover {
+#side-nav a:hover {
+    background-color: #e9ecef;
     text-decoration: underline;
 }
 
-/* Main content styling */
-main h2 {
+/* Style for nested lists (submenus) */
+#side-nav .submenu {
+    padding-left: 15px; /* Indentation */
+    border-left: 2px solid #e0e0e0;
+    margin-left: 10px;
+    /* Hide by default for JS toggle */
+    display: none;
+    margin-top: 8px;
+}
+
+/* An 'open' class will be toggled by JS to show the submenu */
+#side-nav .submenu.open {
+    display: block;
+}
+
+
+/* --- Main Content --- */
+#main-content h2 {
     font-size: 1.8em;
     color: #000;
     border-bottom: 1px solid #a2a9b1;
@@ -66,7 +142,7 @@ main h2 {
     margin-top: 0;
 }
 
-/* Footer styling */
+/* --- Footer --- */
 footer {
     text-align: center;
     padding-top: 20px;
