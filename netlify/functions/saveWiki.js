@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   let sha;
   const getRes = await fetch(apiUrl, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${token}`,
       'User-Agent': 'netlify-function'
     }
   });
@@ -31,7 +31,7 @@ exports.handler = async (event) => {
   const putRes = await fetch(apiUrl, {
     method: 'PUT',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${token}`,
       'Content-Type': 'application/json',
       'User-Agent': 'netlify-function'
     },
