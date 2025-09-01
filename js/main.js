@@ -257,16 +257,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     saveWiki();
                 }
             } else if (mode === 'rename') {
-                const target = li.querySelector(':scope > a, :scope > .category-toggle');
-                const icon = target.querySelector('.edit-icon');
-                if (icon) icon.remove();
-                const currentName = target.textContent.trim();
-                const newName = prompt('Entrez le nouveau nom :', currentName);
-                if (newName && newName.trim() !== '') {
-                    target.textContent = newName.trim();
-                    saveWiki();
-                }
-                updateNavItemsUI();
+                showRenameItemWorkflow(li);
             } else if (mode === 'hide') {
                 const isHidden = li.classList.toggle('hidden-item');
                 updateHiddenItems(id, isHidden);
@@ -280,12 +271,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         function updateEditorPanelUI() {
+            const editorMainView = document.getElementById('editor-main-view');
+            const isWorkflowActive = editorMainView.classList.contains('hidden');
+
+            [renameBtn, deleteBtn, toggleHideBtn, addChapterBtn, addItemBtn].forEach(btn => {
+                btn.disabled = isWorkflowActive || !!currentEditingMode;
+            });
+
+            if (isWorkflowActive) return;
+
             [renameBtn, deleteBtn, toggleHideBtn].forEach(btn => btn.classList.remove('active'));
             renameBtn.textContent = 'Renommer';
             deleteBtn.textContent = 'Supprimer';
             toggleHideBtn.textContent = 'Cacher/Afficher';
-            addChapterBtn.disabled = !!currentEditingMode;
-            addItemBtn.disabled = !!currentEditingMode || !selectedItemId;
 
             if (currentEditingMode) {
                 if (currentEditingMode === 'delete') {
@@ -298,7 +296,32 @@ document.addEventListener('DOMContentLoaded', async function() {
                     toggleHideBtn.textContent = 'Terminer';
                     toggleHideBtn.classList.add('active');
                 }
+            } else {
+                // Keep add item button logic separate from mode buttons
+                const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
+                const isPage = parentLi && parentLi.querySelector(':scope > a');
+                addItemBtn.disabled = !selectedItemId || isPage;
             }
+        }
+
+        const editorMainView = document.getElementById('editor-main-view');
+        const editorWorkflowView = document.getElementById('editor-workflow-view');
+
+        function showWorkflowView(innerHTML, onInit) {
+            editorMainView.classList.add('hidden');
+            editorWorkflowView.innerHTML = innerHTML;
+            if (onInit) {
+                onInit(editorWorkflowView);
+            }
+            editorWorkflowView.classList.remove('hidden');
+            updateEditorPanelUI();
+        }
+
+        function hideWorkflowView() {
+            editorMainView.classList.remove('hidden');
+            editorWorkflowView.classList.add('hidden');
+            editorWorkflowView.innerHTML = '';
+            updateEditorPanelUI();
         }
 
         function createNavItem(name, type) {
@@ -322,14 +345,134 @@ document.addEventListener('DOMContentLoaded', async function() {
             return li;
         }
 
-        addChapterBtn.addEventListener('click', () => {
-            const name = prompt('Nom du nouveau chapitre:');
-            if (!name || name.trim() === '') return;
-            const parentUl = document.querySelector('#side-nav > ul');
-            const newItem = createNavItem(name, 'category');
-            parentUl.appendChild(newItem);
-            saveWiki();
-        });
+        addChapterBtn.addEventListener('click', showAddChapterWorkflow);
+
+        function showAddChapterWorkflow() {
+            const formHTML = `
+                <h4>Ajouter un nouveau chapitre</h4>
+                <div>
+                    <label for="workflow-name">Nom du chapitre :</label>
+                    <input type="text" id="workflow-name" required>
+                </div>
+                <div class="workflow-actions">
+                    <button id="workflow-confirm">Confirmer</button>
+                    <button id="workflow-cancel">Annuler</button>
+                </div>
+            `;
+
+            showWorkflowView(formHTML, (view) => {
+                view.querySelector('#workflow-cancel').addEventListener('click', hideWorkflowView);
+                view.querySelector('#workflow-confirm').addEventListener('click', () => {
+                    const name = view.querySelector('#workflow-name').value.trim();
+                    if (name) {
+                        const parentUl = document.querySelector('#side-nav > ul');
+                        const newItem = createNavItem(name, 'category');
+                        parentUl.appendChild(newItem);
+                        saveWiki();
+                    }
+                    hideWorkflowView();
+                });
+            });
+        }
+
+        function showRenameItemWorkflow(li) {
+            const target = li.querySelector(':scope > a, :scope > .category-toggle');
+            const icon = target.querySelector('.edit-icon');
+
+            let textNode = null;
+            // Find the text node to edit, skipping the icon node
+            for (const node of target.childNodes) {
+                if (node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0) {
+                    textNode = node;
+                    break;
+                }
+            }
+            const currentName = textNode ? textNode.textContent.trim() : target.textContent.trim().replace(/[\n\r\s\t]+/g, ' ');
+
+            const formHTML = `
+                <h4>Renommer "${currentName}"</h4>
+                <div>
+                    <label for="workflow-name">Nouveau nom :</label>
+                    <input type="text" id="workflow-name" value="${currentName}" required>
+                </div>
+                <div class="workflow-actions">
+                    <button id="workflow-confirm">Confirmer</button>
+                    <button id="workflow-cancel">Annuler</button>
+                </div>
+            `;
+
+            showWorkflowView(formHTML, (view) => {
+                view.querySelector('#workflow-cancel').addEventListener('click', hideWorkflowView);
+                view.querySelector('#workflow-confirm').addEventListener('click', () => {
+                    const newName = view.querySelector('#workflow-name').value.trim();
+                    if (newName && newName !== currentName) {
+                        if (textNode) {
+                            textNode.textContent = newName;
+                        } else {
+                            // Fallback if text node not found, might mess up the icon
+                            target.textContent = newName;
+                            if(icon) target.prepend(icon);
+                        }
+                        saveWiki();
+                    }
+                    hideWorkflowView();
+                });
+            });
+        }
+
+        function showAddItemWorkflow() {
+            if (!selectedItemId) return;
+            const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
+            const parentName = parentLi.querySelector(':scope > .category-toggle, :scope > a').textContent.trim();
+
+            const formHTML = `
+                <h4>Ajouter un élément dans "${parentName}"</h4>
+                <div>
+                    <label for="workflow-type">Type :</label>
+                    <select id="workflow-type">
+                        <option value="category">Catégorie</option>
+                        <option value="item">Page</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="workflow-name">Nom :</label>
+                    <input type="text" id="workflow-name" required>
+                </div>
+                <div class="workflow-actions">
+                    <button id="workflow-confirm">Confirmer</button>
+                    <button id="workflow-cancel">Annuler</button>
+                </div>
+            `;
+
+            showWorkflowView(formHTML, (view) => {
+                view.querySelector('#workflow-cancel').addEventListener('click', hideWorkflowView);
+                view.querySelector('#workflow-confirm').addEventListener('click', () => {
+                    const type = view.querySelector('#workflow-type').value;
+                    const name = view.querySelector('#workflow-name').value.trim();
+
+                    if (!name) {
+                        alert('Le nom ne peut pas être vide.');
+                        return;
+                    }
+
+                    let parentUl = parentLi.querySelector(':scope > ul');
+                    if (!parentUl) {
+                        parentUl = document.createElement('ul');
+                        parentUl.className = 'submenu open';
+                        parentLi.appendChild(parentUl);
+                        const toggle = parentLi.querySelector('.category-toggle');
+                        if (toggle) toggle.classList.add('open');
+                    }
+                    const newItem = createNavItem(name, type);
+                    parentUl.appendChild(newItem);
+                    saveWiki();
+
+                    selectedItemId = null;
+                    updateNavSelectionUI();
+                    hideWorkflowView();
+                });
+            });
+        }
 
         addItemBtn.addEventListener('click', () => {
             if (!selectedItemId) return;
@@ -338,26 +481,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 alert("Impossible d'ajouter un sous-élément à une page.");
                 return;
             }
-
-            const isCategory = confirm('Créer une catégorie (OK) ou une page (Annuler) ?');
-            const type = isCategory ? 'category' : 'item';
-            const name = prompt(`Nom du nouvel élément (${isCategory ? 'catégorie' : 'page'}):`);
-            if (!name || name.trim() === '') return;
-
-            let parentUl = parentLi.querySelector(':scope > ul');
-            if (!parentUl) {
-                parentUl = document.createElement('ul');
-                parentUl.className = 'submenu open';
-                parentLi.appendChild(parentUl);
-                const toggle = parentLi.querySelector('.category-toggle');
-                if (toggle) toggle.classList.add('open');
-            }
-            const newItem = createNavItem(name, type);
-            parentUl.appendChild(newItem);
-            saveWiki();
-            // After adding, maybe we should unselect
-            selectedItemId = null;
-            updateNavSelectionUI();
+            showAddItemWorkflow();
         });
 
         deleteBtn.addEventListener('click', () => toggleEditingMode('delete'));
