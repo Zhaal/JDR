@@ -178,6 +178,16 @@ footer {
     display: none;
 }
 
+/* Hidden chapters */
+.hidden-item {
+    display: none;
+}
+
+body.editor-mode .hidden-item {
+    display: block;
+    opacity: 0.5;
+}
+
 .edit-btn {
     margin-left: 5px;
     font-size: 0.8em;
