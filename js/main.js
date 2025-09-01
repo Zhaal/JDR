@@ -457,10 +457,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             const formHTML = `
                 <h4>Ajouter un élément dans "${parentName}"</h4>
                 <div>
-                    <label for="workflow-type">Type :</label>
+                    <label for="workflow-type">Ajouter :</label>
                     <select id="workflow-type">
-                        <option value="category">Catégorie</option>
-                        <option value="item">Page</option>
+                        <option value="category">un sous-chapitre</option>
+                        <option value="item">une page</option>
                     </select>
                 </div>
                 <div>
