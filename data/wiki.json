@@ -556,7 +556,9 @@
     }
   ],
   "pages": {
-    "1": "<h2>Bienvenue sur le wiki de Transcendant !</h2>test<p><br></p><p><br></p>\n            "
+    "0": "<h2>Page non trouvée</h2><p>Le contenu de cette page n'a pas été trouvé.</p>",
+    "1": "<h2>Bienvenue sur le wiki de Transcendant !</h2>test<p><br></p><p><br></p>\n            ",
+    "1756739978803": "<h2>test</h2><p>Contenu à rédiger.</p>"
   },
   "hiddenItems": []
 }
