@@ -16,4 +16,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Add a login button for Netlify Identity
+    const header = document.querySelector('header');
+    if (header) {
+        const loginBtn = document.createElement('button');
+        loginBtn.id = 'login-button';
+        loginBtn.textContent = 'Login';
+        header.appendChild(loginBtn);
+
+        // Dynamically load the Netlify Identity widget
+        const identityScript = document.createElement('script');
+        identityScript.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
+        document.head.appendChild(identityScript);
+
+        identityScript.onload = () => {
+            const identity = window.netlifyIdentity;
+            if (!identity) return;
+
+            loginBtn.addEventListener('click', () => {
+                identity.open();
+            });
+
+            identity.on('login', () => {
+                document.location.href = '/admin/';
+            });
+
+            identity.on('logout', () => {
+                document.location.href = '/';
+            });
+        };
+    }
 });
