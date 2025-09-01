@@ -157,16 +157,27 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.querySelectorAll('#side-nav li').forEach(item => {
                 item.classList.remove('selected-item');
             });
-            if (selectedItemId) {
-                const selectedLi = document.querySelector(`#side-nav li[data-id="${selectedItemId}"]`);
-                if (selectedLi) {
-                    selectedLi.classList.add('selected-item');
-                }
+
+            const selectedLi = document.querySelector(`#side-nav li[data-id="${selectedItemId}"]`);
+
+            if (selectedLi) {
+                selectedLi.classList.add('selected-item');
             }
+
             if (addItemBtn) {
-                const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
-                const isPage = parentLi && parentLi.querySelector(':scope > a');
-                addItemBtn.disabled = !selectedItemId || isPage;
+                if (selectedItemId && selectedLi) {
+                    const target = selectedLi.querySelector(':scope > a, :scope > .category-toggle');
+                    const text = target ? target.textContent.trim() : 'l\'élément';
+                    addItemBtn.textContent = `Éditer "${text}"`;
+                    const isPage = selectedLi.querySelector(':scope > a');
+                    // This button is for adding items, so it should be disabled for pages.
+                    // The user request is to change the text to "Edit X", but the button adds a sub-item.
+                    // Let's stick to the requested text change but keep the original logic for disabling.
+                    addItemBtn.disabled = isPage;
+                } else {
+                    addItemBtn.textContent = "Sélectionner un titre de menu pour l'éditer";
+                    addItemBtn.disabled = true;
+                }
             }
         }
 
@@ -255,6 +266,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         updateNavSelectionUI();
                     }
                     saveWiki();
+                    toggleEditingMode('delete'); // Exit delete mode
                 }
             } else if (mode === 'rename') {
                 showRenameItemWorkflow(li);
@@ -267,6 +279,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     icon.classList.toggle('fa-eye', !isHidden);
                     icon.classList.toggle('fa-eye-slash', isHidden);
                 }
+                toggleEditingMode('hide'); // Exit hide mode
             }
         }
 
@@ -274,18 +287,31 @@ document.addEventListener('DOMContentLoaded', async function() {
             const editorMainView = document.getElementById('editor-main-view');
             const isWorkflowActive = editorMainView.classList.contains('hidden');
 
+            // Reset buttons state
             [renameBtn, deleteBtn, toggleHideBtn, addChapterBtn, addItemBtn].forEach(btn => {
-                btn.disabled = isWorkflowActive || !!currentEditingMode;
+                btn.disabled = false;
+                btn.classList.remove('active');
             });
-
-            if (isWorkflowActive) return;
-
-            [renameBtn, deleteBtn, toggleHideBtn].forEach(btn => btn.classList.remove('active'));
             renameBtn.textContent = 'Renommer';
             deleteBtn.textContent = 'Supprimer';
             toggleHideBtn.textContent = 'Cacher/Afficher';
 
+            if (isWorkflowActive) {
+                // When a workflow is active, disable all main buttons
+                [renameBtn, deleteBtn, toggleHideBtn, addChapterBtn, addItemBtn].forEach(btn => {
+                    btn.disabled = true;
+                });
+                return;
+            }
+
             if (currentEditingMode) {
+                // A mode is active, disable all buttons except the one that can cancel the mode
+                [addChapterBtn, addItemBtn].forEach(btn => btn.disabled = true);
+                if (currentEditingMode !== 'rename') renameBtn.disabled = true;
+                if (currentEditingMode !== 'delete') deleteBtn.disabled = true;
+                if (currentEditingMode !== 'hide') toggleHideBtn.disabled = true;
+
+                // Update the active button
                 if (currentEditingMode === 'delete') {
                     deleteBtn.textContent = 'Annuler';
                     deleteBtn.classList.add('active');
@@ -297,7 +323,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     toggleHideBtn.classList.add('active');
                 }
             } else {
-                // Keep add item button logic separate from mode buttons
+                // No mode active, update button states based on selection
                 const parentLi = document.querySelector(`li[data-id="${selectedItemId}"]`);
                 const isPage = parentLi && parentLi.querySelector(':scope > a');
                 addItemBtn.disabled = !selectedItemId || isPage;
@@ -321,7 +347,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             editorMainView.classList.remove('hidden');
             editorWorkflowView.classList.add('hidden');
             editorWorkflowView.innerHTML = '';
-            updateEditorPanelUI();
+
+            if (currentEditingMode === 'rename') {
+                // We were in rename mode, so we need to exit it.
+                // toggleEditingMode will handle the UI updates.
+                toggleEditingMode('rename');
+            } else {
+                // Not in a mode that has a workflow, just update the UI.
+                updateEditorPanelUI();
+            }
         }
 
         function createNavItem(name, type) {
