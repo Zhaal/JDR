@@ -141,11 +141,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                 if (currentEditingMode === 'hide') {
                     icon.className += li.classList.contains('hidden-item') ? ' is-hidden' : ' is-visible';
-                    icon.innerHTML = `<span class="icon-eye"></span>`;
+                    icon.innerHTML = `<i class="fas fa-eye${li.classList.contains('hidden-item') ? '-slash' : ''}"></i>`;
                 } else if (currentEditingMode === 'delete') {
-                    icon.innerHTML = `[X]`;
+                    icon.innerHTML = `<i class="fas fa-trash-can"></i>`;
                 } else if (currentEditingMode === 'rename') {
-                    icon.innerHTML = `[R]`;
+                    icon.innerHTML = `<i class="fas fa-pencil"></i>`;
                 }
 
                 icon.addEventListener('click', (e) => {
@@ -181,10 +181,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                 updateHiddenItems(id, isHidden);
                 saveWiki();
                 // Update icon state
-                const icon = li.querySelector('.hide-icon');
+                const icon = li.querySelector('.hide-icon i');
                 if (icon) {
-                    icon.classList.toggle('is-hidden', isHidden);
-                    icon.classList.toggle('is-visible', !isHidden);
+                    icon.classList.toggle('fa-eye', !isHidden);
+                    icon.classList.toggle('fa-eye-slash', isHidden);
                 }
             }
         }
