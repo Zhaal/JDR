@@ -556,5 +556,7 @@
     }
   ],
   "mainContent": "\n                <h2>Bienvenue sur le wiki de Transcendant !</h2>\n                <p>Ce site rassemble toutes les informations nécessaires pour jouer au jeu de rôle Transcendant.</p>\n                <p>Utilisez la barre de navigation pour explorer les différentes sections.</p><p><br></p><p><br></p>\n            ",
-  "hiddenItems": []
+  "hiddenItems": [
+    "1"
+  ]
 }
