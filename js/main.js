@@ -1,50 +1,99 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Select all category toggles
     const toggles = document.querySelectorAll('.category-toggle');
-
     toggles.forEach(toggle => {
         toggle.addEventListener('click', () => {
-            // Toggle the 'open' class on the clicked toggle itself (for the arrow)
             toggle.classList.toggle('open');
-
-            // Find the next sibling element, which is the submenu
             const submenu = toggle.nextElementSibling;
-
-            // Check if the next sibling is a submenu and toggle its 'open' class
             if (submenu && submenu.classList.contains('submenu')) {
                 submenu.classList.toggle('open');
             }
         });
     });
 
-    // Add a login button for Netlify Identity
-    const header = document.querySelector('header');
-    if (header) {
-        const loginBtn = document.createElement('button');
-        loginBtn.id = 'login-button';
-        loginBtn.textContent = 'Login';
-        header.appendChild(loginBtn);
+    const loginBtn = document.getElementById('login-button');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+            if (user === 'admin' && pass === 'jdr') {
+                enableEditing();
+            } else {
+                alert('Identifiants invalides');
+            }
+        });
+    }
 
-        // Dynamically load the Netlify Identity widget
-        const identityScript = document.createElement('script');
-        identityScript.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
-        document.head.appendChild(identityScript);
+    function enableEditing() {
+        const loginArea = document.getElementById('login-area');
+        if (loginArea) loginArea.classList.add('hidden');
+        const toolbar = document.getElementById('edit-toolbar');
+        if (toolbar) toolbar.classList.remove('hidden');
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.contentEditable = 'true';
+        }
+        addNavEditButtons();
+    }
 
-        identityScript.onload = () => {
-            const identity = window.netlifyIdentity;
-            if (!identity) return;
+    function addNavEditButtons() {
+        const items = document.querySelectorAll('#side-nav li');
+        items.forEach(li => {
+            const target = li.querySelector('.category-toggle, a');
+            if (!target) return;
 
-            loginBtn.addEventListener('click', () => {
-                identity.open();
+            const renameBtn = document.createElement('button');
+            renameBtn.textContent = 'Renommer';
+            renameBtn.className = 'edit-btn';
+            renameBtn.addEventListener('click', () => {
+                const newName = prompt('Nouveau nom:', target.textContent.trim());
+                if (newName) target.textContent = newName;
             });
 
-            identity.on('login', () => {
-                document.location.href = '/admin/';
+            const hideBtn = document.createElement('button');
+            hideBtn.textContent = 'Cacher';
+            hideBtn.className = 'edit-btn';
+            hideBtn.addEventListener('click', () => {
+                if (li.style.display === 'none') {
+                    li.style.display = '';
+                    hideBtn.textContent = 'Cacher';
+                } else {
+                    li.style.display = 'none';
+                    hideBtn.textContent = 'Afficher';
+                }
             });
 
-            identity.on('logout', () => {
-                document.location.href = '/';
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Supprimer';
+            deleteBtn.className = 'edit-btn';
+            deleteBtn.addEventListener('click', () => {
+                li.remove();
             });
-        };
+
+            li.appendChild(renameBtn);
+            li.appendChild(hideBtn);
+            li.appendChild(deleteBtn);
+        });
+    }
+
+    const insertTableBtn = document.getElementById('insert-table');
+    if (insertTableBtn) {
+        insertTableBtn.addEventListener('click', () => {
+            const rows = parseInt(prompt('Nombre de lignes ?'), 10);
+            const cols = parseInt(prompt('Nombre de colonnes ?'), 10);
+            if (rows > 0 && cols > 0) {
+                const table = document.createElement('table');
+                for (let r = 0; r < rows; r++) {
+                    const tr = document.createElement('tr');
+                    for (let c = 0; c < cols; c++) {
+                        const td = document.createElement('td');
+                        td.contentEditable = 'true';
+                        tr.appendChild(td);
+                    }
+                    table.appendChild(tr);
+                }
+                const main = document.getElementById('main-content');
+                main.appendChild(table);
+            }
+        });
     }
 });
