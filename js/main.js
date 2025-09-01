@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
+    let wikiPages = {};
+    let currentPageId = null;
+
     await loadSavedWiki();
     assignNavIds();
     loadHiddenItems();
@@ -68,11 +71,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     function initializeNavigation() {
         const sideNav = document.getElementById('side-nav');
-        if (sideNav.dataset.navListener) return; // Prevent adding multiple listeners
+        if (sideNav.dataset.navListener) return;
 
         sideNav.addEventListener('click', function(event) {
+            const link = event.target.closest('a');
             const toggle = event.target.closest('.category-toggle');
-            if (toggle) {
+
+            if (link) {
+                event.preventDefault();
+                const li = link.closest('li');
+                if (li && li.dataset.id) {
+                    loadPage(li.dataset.id);
+                }
+            } else if (toggle) {
                 toggle.classList.toggle('open');
                 const submenu = toggle.nextElementSibling;
                 if (submenu && submenu.classList.contains('submenu')) {
@@ -239,20 +250,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             mainView.classList.add('hidden');
             workflowView.classList.remove('hidden');
 
-            const backBtn = document.createElement('button');
-            backBtn.textContent = 'Retour';
-            backBtn.addEventListener('click', () => {
-                workflowHistory.pop(); // Remove current state
-                const prevState = workflowHistory.pop(); // Get previous state
-                if (prevState) {
-                    renderWorkflow(prevState);
-                } else {
-                    workflowView.classList.add('hidden');
-                    mainView.classList.remove('hidden');
-                }
-            });
-            workflowView.appendChild(backBtn);
-
             const { level, parentId, parentName } = state;
 
             if (parentName) {
@@ -283,15 +280,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         function renderSelection(level, parentId) {
             workflowHistory.push({ level, parentId }); // Save current state for back button
             workflowView.innerHTML = '';
-
-            const backBtn = document.createElement('button');
-            backBtn.textContent = 'Retour';
-            backBtn.addEventListener('click', () => {
-                workflowHistory.pop();
-                const prevState = workflowHistory.pop();
-                renderWorkflow(prevState);
-            });
-            workflowView.appendChild(backBtn);
 
             const listContainer = document.createElement('div');
             const selector = parentId ? `li[data-id="${parentId}"] > ul > li` : '#side-nav > ul > li';
@@ -425,15 +413,34 @@ document.addEventListener('DOMContentLoaded', async function() {
         return ul;
     }
 
+    function loadPage(id) {
+        const mainContent = document.getElementById('main-content');
+        const content = wikiPages[id] || `<h2>Page non trouvée</h2><p>Le contenu de cette page n'a pas été trouvé.</p>`;
+        mainContent.innerHTML = content;
+        currentPageId = id;
+
+        document.querySelectorAll('#side-nav li').forEach(item => {
+            item.classList.remove('active');
+        });
+        const activeLi = document.querySelector(`#side-nav li[data-id="${id}"]`);
+        if (activeLi) {
+            activeLi.classList.add('active');
+        }
+    }
+
     async function loadSavedWiki() {
         const sideNavContainer = document.getElementById('side-nav');
 
-        const render = (navData) => {
+        const renderNav = (navData) => {
             const existingUl = sideNavContainer.querySelector('ul');
-            if (existingUl) {
-                existingUl.remove();
-            }
+            if (existingUl) existingUl.remove();
             renderSideNav(navData, sideNavContainer);
+        };
+
+        const loadContent = (pages) => {
+            wikiPages = pages || {};
+            const firstPageId = document.querySelector('#side-nav li[data-id]')?.dataset.id || '1';
+            loadPage(firstPageId);
         };
 
         try {
@@ -441,37 +448,42 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (response.ok) {
                 const data = await response.json();
                 if (data.sideNav) {
-                    render(data.sideNav);
+                    renderNav(data.sideNav);
                 } else {
                     const savedNav = localStorage.getItem('sideNav');
-                    if (savedNav) render(JSON.parse(savedNav));
+                    if (savedNav) renderNav(JSON.parse(savedNav));
                 }
-                if (data.mainContent) {
-                    document.getElementById('main-content').innerHTML = data.mainContent;
-                } else {
-                    const savedContent = localStorage.getItem('mainContent');
-                    if (savedContent) document.getElementById('main-content').innerHTML = savedContent;
-                }
+                loadContent(data.pages);
+
                 if (data.hiddenItems) {
                     localStorage.setItem('hiddenItems', JSON.stringify(data.hiddenItems));
                 }
                 return;
             }
         } catch (e) {
-            console.warn('Chargement distant impossible, utilisation du stockage local');
+            console.warn('Chargement distant impossible, utilisation du stockage local', e);
         }
 
-        // Fallback for fetch failure
         const savedNav = localStorage.getItem('sideNav');
         if (savedNav) {
             try {
-                render(JSON.parse(savedNav));
+                renderNav(JSON.parse(savedNav));
             } catch (jsonError) {
                 console.error("Could not parse sideNav from localStorage", jsonError);
             }
         }
-        const savedContent = localStorage.getItem('mainContent');
-        if (savedContent) document.getElementById('main-content').innerHTML = savedContent;
+
+        const savedPages = localStorage.getItem('wikiPages');
+        if (savedPages) {
+            loadContent(JSON.parse(savedPages));
+        } else {
+            // Fallback for old data structure
+            const savedContent = localStorage.getItem('mainContent');
+            if (savedContent) {
+                wikiPages = { '1': savedContent };
+                loadPage('1');
+            }
+        }
     }
 
     function saveWiki() {
@@ -495,13 +507,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     function saveSideNav() {
         const sideNavData = buildSideNavJson(document.getElementById('side-nav'));
         localStorage.setItem('sideNav', JSON.stringify(sideNavData));
+        localStorage.setItem('wikiPages', JSON.stringify(wikiPages));
     }
 
     function saveMainContent() {
+        if (!currentPageId) return;
         const main = document.getElementById('main-content');
         const clone = main.cloneNode(true);
         clone.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
-        localStorage.setItem('mainContent', clone.innerHTML);
+        wikiPages[currentPageId] = clone.innerHTML;
     }
 
     async function logout() {
@@ -530,11 +544,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     async function saveWikiOnline() {
-        const main = document.getElementById('main-content').cloneNode(true);
-        main.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
+        // First, ensure the current page's content is up-to-date in wikiPages
+        saveMainContent();
+
         const data = {
             sideNav: buildSideNavJson(document.getElementById('side-nav')),
-            mainContent: main.innerHTML,
+            pages: wikiPages,
             hiddenItems: JSON.parse(localStorage.getItem('hiddenItems') || '[]')
         };
 

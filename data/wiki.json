@@ -555,6 +555,8 @@
       ]
     }
   ],
-  "mainContent": "<h2>Bienvenue sur le wiki de Transcendant !</h2>test<p><br></p><p><br></p>\n            ",
+  "pages": {
+    "1": "<h2>Bienvenue sur le wiki de Transcendant !</h2>test<p><br></p><p><br></p>\n            "
+  },
   "hiddenItems": []
 }
