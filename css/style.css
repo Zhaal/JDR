@@ -356,78 +356,35 @@ body.editor-mode #side-nav li:not(.hidden-item) > a {
 /* --- Edit Mode Styles --- */
 
 .edit-icon {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
     margin-right: 8px;
     cursor: pointer;
-    vertical-align: middle;
-    text-align: center;
-    font-weight: bold;
-    line-height: 20px;
+    font-size: 1.1em;
+    color: #555;
+    transition: color 0.2s ease-in-out;
 }
 
-/* Delete Icon */
+.edit-icon:hover {
+    color: #000;
+}
+
+/* Specific icon styling */
 .delete-icon {
-    background-color: red;
-    color: yellow;
-    animation: flash-delete 1s infinite;
+    color: #dc3545; /* Red */
+}
+.delete-icon:hover {
+    color: #a71d2a;
 }
 
-@keyframes flash-delete {
-    0%, 100% { color: yellow; }
-    50% { color: black; }
-}
-
-/* Rename Icon */
 .rename-icon {
-    background-color: blue;
-    color: white;
-    animation: flash-rename 1s infinite;
+    color: #007bff; /* Blue */
+}
+.rename-icon:hover {
+    color: #0056b3;
 }
 
-@keyframes flash-rename {
-    0%, 100% { color: white; }
-    50% { color: lightgreen; }
-}
-
-/* Hide/Show Icon */
 .hide-icon {
-    border-radius: 50%;
+    color: #17a2b8; /* Teal */
 }
-
-.hide-icon.is-visible {
-    background-color: green;
-}
-
-.hide-icon.is-hidden {
-    background-color: yellow;
-}
-
-.hide-icon .icon-eye {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    margin-top: 3px;
-}
-
-.hide-icon.is-visible .icon-eye {
-    background-color: white;
-    animation: flash-eye-visible 1s infinite;
-}
-
-.hide-icon.is-hidden .icon-eye {
-    background-color: black;
-    animation: flash-eye-hidden 1s infinite;
-}
-
-@keyframes flash-eye-visible {
-    0%, 100% { background-color: white; }
-    50% { background-color: lightgray; }
-}
-
-@keyframes flash-eye-hidden {
-    0%, 100% { background-color: black; }
-    50% { background-color: dimgray; }
+.hide-icon:hover {
+    color: #107586;
 }
