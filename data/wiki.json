@@ -22,6 +22,18 @@
           "title": "Créer un personnage",
           "type": "item",
           "children": []
+        },
+        {
+          "id": "1756730172502",
+          "title": "test",
+          "type": "sub-chapter",
+          "children": []
+        },
+        {
+          "id": "1756730195389",
+          "title": "ggg",
+          "type": "item",
+          "children": []
         }
       ]
     },
