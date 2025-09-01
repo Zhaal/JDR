@@ -97,25 +97,34 @@ document.addEventListener('DOMContentLoaded', async function() {
     function addNavEditButtons() {
         // Clear existing buttons
         document.querySelectorAll('#side-nav .edit-btn').forEach(btn => btn.remove());
+        const sideNav = document.getElementById('side-nav');
+        const mainUl = sideNav.querySelector('ul');
 
         const addChapterBtn = document.createElement('button');
-        addChapterBtn.textContent = 'Ajouter Chapitre';
+        addChapterBtn.textContent = 'Ajouter un chapitre';
         addChapterBtn.className = 'edit-btn';
+        addChapterBtn.style.marginLeft = '10px'; // Add some style to position it nicely
         addChapterBtn.addEventListener('click', () => {
             const title = prompt('Nom du chapitre:');
             if (title) {
                 const id = Date.now().toString();
-                const newNode = { id, title, type: 'chapter', children: [] };
-                const sideNavData = buildSideNavJson(document.getElementById('side-nav'));
-                sideNavData.push(newNode);
-                const sideNavContainer = document.getElementById('side-nav');
-                sideNavContainer.innerHTML = '<h3>POUR LES JOUEURS…</h3>';
-                renderSideNav(sideNavData, sideNavContainer);
+                const li = document.createElement('li');
+                li.dataset.id = id;
+
+                const span = document.createElement('span');
+                span.className = 'category-toggle';
+                span.textContent = title;
+                li.appendChild(span);
+
+                mainUl.appendChild(li);
+
+                // Re-initialize edit buttons for the new element and its children
                 addNavEditButtons();
                 saveWiki();
             }
         });
-        document.getElementById('side-nav').appendChild(addChapterBtn);
+        // Add the button after the main list
+        mainUl.insertAdjacentElement('afterend', addChapterBtn);
 
         const items = document.querySelectorAll('#side-nav li');
         items.forEach(li => {
@@ -148,9 +157,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             deleteBtn.textContent = 'Supprimer';
             deleteBtn.className = 'edit-btn';
             deleteBtn.addEventListener('click', () => {
-                li.remove();
-                updateHiddenItems(id, false);
-                saveWiki();
+                if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
+                    li.remove();
+                    updateHiddenItems(id, false);
+                    saveWiki();
+                }
             });
 
             li.appendChild(renameBtn);
@@ -162,16 +173,29 @@ document.addEventListener('DOMContentLoaded', async function() {
                 addSubItemBtn.textContent = 'Ajouter Elément';
                 addSubItemBtn.className = 'edit-btn';
                 addSubItemBtn.addEventListener('click', () => {
-                    const title = prompt('Nom de l-élément:');
+                    const title = prompt('Nom de l\'élément:');
                     if (title) {
                         const newId = Date.now().toString();
-                        const newNode = { id: newId, title, type: 'item', children: [] };
-                        const sideNavData = buildSideNavJson(document.getElementById('side-nav'));
-                        const parentNode = findNodeById(sideNavData, id);
-                        parentNode.children.push(newNode);
-                        const sideNavContainer = document.getElementById('side-nav');
-                        sideNavContainer.innerHTML = '<h3>POUR LES JOUEURS…</h3>';
-                        renderSideNav(sideNavData, sideNavContainer);
+                        let submenu = li.querySelector('ul.submenu');
+                        if (!submenu) {
+                            submenu = document.createElement('ul');
+                            submenu.className = 'submenu open';
+                            li.appendChild(submenu);
+                            // Make sure the parent toggle is open
+                            target.classList.add('open');
+                        }
+
+                        const newItemLi = document.createElement('li');
+                        newItemLi.dataset.id = newId;
+
+                        const a = document.createElement('a');
+                        a.href = '#';
+                        a.textContent = title;
+                        newItemLi.appendChild(a);
+
+                        submenu.appendChild(newItemLi);
+
+                        // Re-initialize buttons to cover the new element
                         addNavEditButtons();
                         saveWiki();
                     }
@@ -184,13 +208,26 @@ document.addEventListener('DOMContentLoaded', async function() {
                     const title = prompt('Nom du sous-chapitre:');
                     if (title) {
                         const newId = Date.now().toString();
-                        const newNode = { id: newId, title, type: 'sub-chapter', children: [] };
-                        const sideNavData = buildSideNavJson(document.getElementById('side-nav'));
-                        const parentNode = findNodeById(sideNavData, id);
-                        parentNode.children.push(newNode);
-                        const sideNavContainer = document.getElementById('side-nav');
-                        sideNavContainer.innerHTML = '<h3>POUR LES JOUEURS…</h3>';
-                        renderSideNav(sideNavData, sideNavContainer);
+                        let submenu = li.querySelector('ul.submenu');
+                        if (!submenu) {
+                            submenu = document.createElement('ul');
+                            submenu.className = 'submenu open';
+                            li.appendChild(submenu);
+                             // Make sure the parent toggle is open
+                            target.classList.add('open');
+                        }
+
+                        const newSubChapterLi = document.createElement('li');
+                        newSubChapterLi.dataset.id = newId;
+
+                        const span = document.createElement('span');
+                        span.className = 'category-toggle';
+                        span.textContent = title;
+                        newSubChapterLi.appendChild(span);
+
+                        submenu.appendChild(newSubChapterLi);
+
+                        // Re-initialize buttons to cover the new element
                         addNavEditButtons();
                         saveWiki();
                     }
@@ -202,17 +239,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    function findNodeById(nodes, id) {
-        for (const node of nodes) {
-            if (node.id === id) return node;
-            if (node.children) {
-                const found = findNodeById(node.children, id);
-                if (found) return found;
-            }
-        }
-        return null;
-    }
-
     function addTableDeleteButtons() {
         const tables = document.querySelectorAll('#main-content table');
         tables.forEach(table => {
@@ -221,9 +247,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             btn.textContent = 'Supprimer le tableau';
             btn.className = 'edit-btn delete-table-btn';
             btn.addEventListener('click', () => {
-                btn.remove();
-                table.remove();
-                saveWiki();
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce tableau ?')) {
+                    btn.remove();
+                    table.remove();
+                    saveWiki();
+                }
             });
             table.parentNode.insertBefore(btn, table);
         });
