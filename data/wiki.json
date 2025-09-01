@@ -1,7 +1,560 @@
 {
-  "sideNav": "\n                    <h3>POUR LES JOUEURS…</h3>\n                    <ul>\n                        <li data-id=\"0\">\n                            <span class=\"category-toggle open\">Règles de base</span>\n                            <ul class=\"submenu open\">\n                                <li data-id=\"1\" class=\"hidden-item\"><a href=\"#\" data-jzz-gui-player=\"true\">Pour commencer</a></li>\n                                <li data-id=\"2\" class=\"\"><a href=\"#\" data-jzz-gui-player=\"true\">Vocabulaire courant</a></li>\n                                <li data-id=\"3\"><a href=\"#\" data-jzz-gui-player=\"true\">Créer un personnage</a></li>\n                            </ul>\n                        </li>\n                        <li data-id=\"4\">\n                            <span class=\"category-toggle\">Les personnages</span>\n                            <ul class=\"submenu\">\n                                <li data-id=\"5\" class=\"\"><a href=\"#\" data-jzz-gui-player=\"true\">Les caractéristiques</a></li>\n                                <li data-id=\"6\" class=\"\">\n                                    <span class=\"category-toggle open\">Les races</span>\n                                    <ul class=\"submenu open\">\n                                        <li data-id=\"7\" class=\"\"><a href=\"#\" data-jzz-gui-player=\"true\">Les races de base</a></li>\n                                        <li data-id=\"8\"><a href=\"#\" data-jzz-gui-player=\"true\">Les races additionnelles</a></li>\n                                        <li data-id=\"9\"><a href=\"#\" data-jzz-gui-player=\"true\">Les races extraordinaires</a></li>\n                                        <li data-id=\"10\"><a href=\"#\" data-jzz-gui-player=\"true\">Les races monstrueuses</a></li>\n                                    </ul>\n                                </li>\n                                <li data-id=\"11\">\n                                    <span class=\"category-toggle\">Les classes</span>\n                                    <ul class=\"submenu\">\n                                        <li data-id=\"12\"><a href=\"#\" data-jzz-gui-player=\"true\">Les classes de base</a></li>\n                                        <li data-id=\"13\"><a href=\"#\" data-jzz-gui-player=\"true\">Les classes supplémentaires</a></li>\n                                        <li data-id=\"14\"><a href=\"#\" data-jzz-gui-player=\"true\">Les classes hybrides</a></li>\n                                        <li data-id=\"15\"><a href=\"#\" data-jzz-gui-player=\"true\">Les classes occultes</a></li>\n                                    </ul>\n                                </li>\n                                <li data-id=\"16\"><a href=\"#\" data-jzz-gui-player=\"true\">Les familiers</a></li>\n                                <li data-id=\"17\"><a href=\"#\" data-jzz-gui-player=\"true\">Les compagnons animaux</a></li>\n                                <li data-id=\"18\"><a href=\"#\" data-jzz-gui-player=\"true\">Les archétypes de classe</a></li>\n                                <li data-id=\"19\"><a href=\"#\" data-jzz-gui-player=\"true\">Les classes de prestige</a></li>\n                                <li data-id=\"20\"><a href=\"#\" data-jzz-gui-player=\"true\">Les compétences</a></li>\n                                <li data-id=\"21\"><a href=\"#\" data-jzz-gui-player=\"true\">Les dons</a></li>\n                                <li data-id=\"22\"><a href=\"#\" data-jzz-gui-player=\"true\">Les traits de personnage</a></li>\n                                <li data-id=\"23\"><a href=\"#\" data-jzz-gui-player=\"true\">L’alignement</a></li>\n                                <li data-id=\"24\"><a href=\"#\" data-jzz-gui-player=\"true\">L’état civil et les mensurations</a></li>\n                                <li data-id=\"25\">\n                                    <span class=\"category-toggle\">L’historique du personnage</span>\n                                    <ul class=\"submenu\">\n                                        <li data-id=\"26\"><a href=\"#\" data-jzz-gui-player=\"true\">Générateur d’historique</a></li>\n                                    </ul>\n                                </li>\n                                <li data-id=\"27\">\n                                    <span class=\"category-toggle\">La progression des personnages</span>\n                                    <ul class=\"submenu\">\n                                        <li data-id=\"28\"><a href=\"#\" data-jzz-gui-player=\"true\">Au-delà du niveau 20</a></li>\n                                        <li data-id=\"29\"><a href=\"#\" data-jzz-gui-player=\"true\">Le réapprentissage</a></li>\n                                    </ul>\n                                </li>\n                            </ul>\n                        </li>\n                        <li data-id=\"30\">\n                            <span class=\"category-toggle\">L’équipement</span>\n                            <ul class=\"submenu\">\n                                <li data-id=\"31\">\n                                    <span class=\"category-toggle\">Les armes</span>\n                                    <ul class=\"submenu\">\n                                        <li data-id=\"32\"><a href=\"#\" data-jzz-gui-player=\"true\">Les armes à feu</a></li>\n                                        <li data-id=\"33\"><a href=\"#\" data-jzz-gui-player=\"true\">Les engins de siège</a></li>\n                                    </ul>\n                                </li>\n                                <li data-id=\"34\"><a href=\"#\" data-jzz-gui-player=\"true\">Les armures</a></li>\n                                <li data-id=\"35\"><a href=\"#\" data-jzz-gui-player=\"true\">Les matériaux spéciaux</a></li>\n                                <li data-id=\"36\"><a href=\"#\" data-jzz-gui-player=\"true\">Les marchandises et les services</a></li>\n                                <li data-id=\"37\"><a href=\"#\" data-jzz-gui-player=\"true\">Les objets alchimiques</a></li>\n                                <li data-id=\"38\">\n                                    <span class=\"category-toggle\">L’argent et la richesse</span>\n                                    <ul class=\"submenu\">\n                                        <li data-id=\"39\"><a href=\"#\" data-jzz-gui-player=\"true\">Les marchandises</a></li>\n                                        <li data-id=\"40\"><a href=\"#\" data-jzz-gui-player=\"true\">Le poids transportable</a></li>\n                                    </ul>\n                                </li>\n                                <li data-id=\"41\"><a href=\"#\" data-jzz-gui-player=\"true\">Les réactifs alchimiques</a></li>\n                            </ul>\n                        </li>\n                        <li data-id=\"42\">\n                            <span class=\"category-toggle\">Les objets magiques</span>\n                            <ul class=\"submenu\">\n                                <li data-id=\"43\"><a href=\"#\" data-jzz-gui-player=\"true\">Règles relatives aux objets magiques</a></li>\n                                <li data-id=\"44\"><a href=\"#\" data-jzz-gui-player=\"true\">Description des objets magiques</a></li>\n                                <li data-id=\"45\"><a href=\"#\" data-jzz-gui-player=\"true\">Création d’objets magiques</a></li>\n                                <li data-id=\"46\"><a href=\"#\" data-jzz-gui-player=\"true\">Objets magiques par catégorie</a></li>\n                                <li data-id=\"47\"><a href=\"#\" data-jzz-gui-player=\"true\">Les artefacts</a></li>\n                                <li data-id=\"48\"><a href=\"#\" data-jzz-gui-player=\"true\">Les objets intelligents</a></li>\n                                <li data-id=\"49\"><a href=\"#\" data-jzz-gui-player=\"true\">Les objets maudits</a></li>\n                            </ul>\n                        </li>\n                        <li data-id=\"50\">\n                            <span class=\"category-toggle\">L’exploration</span>\n                            <ul class=\"submenu\">\n                                <li data-id=\"51\">\n                                    <span class=\"category-toggle\">Les types de déplacement</span>\n                                    <ul class=\"submenu\">\n                                        <li data-id=\"52\"><a href=\"#\" data-jzz-gui-player=\"true\">Déplacement tactique</a></li>\n                                        <li data-id=\"53\"><a href=\"#\" data-jzz-gui-player=\"true\">Déplacement sur courte distance</a></li>\n                                        <li data-id=\"54\"><a href=\"#\" data-jzz-gui-player=\"true\">Déplacement sur longue distance</a></li>\n                                    </ul>\n                                </li>\n                                <li data-id=\"55\"><a href=\"#\" data-jzz-gui-player=\"true\">Évasion et poursuite</a></li>\n                                <li data-id=\"56\"><a href=\"#\" data-jzz-gui-player=\"true\">La survie</a></li>\n                                <li data-id=\"57\"><a href=\"#\" data-jzz-gui-player=\"true\">La vision et la lumière</a></li>\n                                <li data-id=\"58\"><a href=\"#\" data-jzz-gui-player=\"true\">L’intrusion et le maraudage</a></li>\n                            </ul>\n                        </li>\n                        <li data-id=\"59\">\n                            <span class=\"category-toggle\">La magie</span>\n                            <ul class=\"submenu\">\n                                <li data-id=\"60\"><a href=\"#\" data-jzz-gui-player=\"true\">Lancer des sorts</a></li>\n                                <li data-id=\"61\"><a href=\"#\" data-jzz-gui-player=\"true\">Présentation des sorts</a></li>\n                                <li data-id=\"62\"><a href=\"#\" data-jzz-gui-player=\"true\">La magie profane</a></li>\n                                <li data-id=\"63\"><a href=\"#\" data-jzz-gui-player=\"true\">La magie divine</a></li>\n                                <li data-id=\"64\"><a href=\"#\" data-jzz-gui-player=\"true\">La magie psychique</a></li>\n                                <li data-id=\"65\"><a href=\"#\" data-jzz-gui-player=\"true\">Les pouvoirs spéciaux</a></li>\n                                <li data-id=\"66\"><a href=\"#\" data-jzz-gui-player=\"true\">Liste alphabétique des sorts (de A à D, de E à O, de P à Z)</a></li>\n                                <li data-id=\"67\"><a href=\"#\" data-jzz-gui-player=\"true\">Liste des sorts par classe</a></li>\n                                <li data-id=\"68\"><a href=\"#\" data-jzz-gui-player=\"true\">Liste des sorts par registre</a></li>\n                                <li data-id=\"69\"><a href=\"#\" data-jzz-gui-player=\"true\">Les duels de sorts</a></li>\n                                <li data-id=\"70\"><a href=\"#\" data-jzz-gui-player=\"true\">Les grimoires</a></li>\n                                <li data-id=\"71\"><a href=\"#\" data-jzz-gui-player=\"true\">Construire et modifier des créatures artificielles</a></li>\n                                <li data-id=\"72\"><a href=\"#\" data-jzz-gui-player=\"true\">Lier un extérieur</a></li>\n                                <li data-id=\"73\"><a href=\"#\" data-jzz-gui-player=\"true\">Les mots de pouvoir</a></li>\n                            </ul>\n                        </li>\n                        <li data-id=\"74\">\n                            <span class=\"category-toggle\">Le combat</span>\n                            <ul class=\"submenu\">\n                                <li data-id=\"75\"><a href=\"#\" data-jzz-gui-player=\"true\">Le déroulement d’un combat</a></li>\n                                <li data-id=\"76\"><a href=\"#\" data-jzz-gui-player=\"true\">Les valeurs de combat</a></li>\n                                <li data-id=\"77\"><a href=\"#\" data-jzz-gui-player=\"true\">Les actions en combat</a></li>\n                                <li data-id=\"78\"><a href=\"#\" data-jzz-gui-player=\"true\">Les blessures et la mort</a></li>\n                                <li data-id=\"79\"><a href=\"#\" data-jzz-gui-player=\"true\">Les déplacements en combat</a></li>\n                                <li data-id=\"80\"><a href=\"#\" data-jzz-gui-player=\"true\">Les petites et grandes créatures</a></li>\n                                <li data-id=\"81\"><a href=\"#\" data-jzz-gui-player=\"true\">Les modificateurs de combat</a></li>\n                                <li data-id=\"82\"><a href=\"#\" data-jzz-gui-player=\"true\">Les actions spéciales</a></li>\n                                <li data-id=\"83\"><a href=\"#\" data-jzz-gui-player=\"true\">Les actions modifiant l’initiative</a></li>\n                                <li data-id=\"84\"><a href=\"#\" data-jzz-gui-player=\"true\">Les états préjudiciables</a></li>\n                                <li data-id=\"85\"><a href=\"#\" data-jzz-gui-player=\"true\">Les règles spéciales</a></li>\n                                <li data-id=\"86\"><a href=\"#\" data-jzz-gui-player=\"true\">Les combats de spectacle</a></li>\n                                <li data-id=\"87\"><a href=\"#\" data-jzz-gui-player=\"true\">Les duels</a></li>\n                                <li data-id=\"88\"><a href=\"#\" data-jzz-gui-player=\"true\">Les points héroïques</a></li>\n                                <li data-id=\"89\"><a href=\"#\" data-jzz-gui-player=\"true\">Règles alternatives de l’AG</a></li>\n                            </ul>\n                        </li>\n                    </ul>\n                ",
+  "sideNav": [
+    {
+      "id": "0",
+      "title": "Règles de base",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "1",
+          "title": "Pour commencer",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "2",
+          "title": "Vocabulaire courant",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "3",
+          "title": "Créer un personnage",
+          "type": "item",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Les personnages",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "5",
+          "title": "Les caractéristiques",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "6",
+          "title": "Les races",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "7",
+              "title": "Les races de base",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "8",
+              "title": "Les races additionnelles",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "9",
+              "title": "Les races extraordinaires",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "10",
+              "title": "Les races monstrueuses",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "11",
+          "title": "Les classes",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "12",
+              "title": "Les classes de base",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "13",
+              "title": "Les classes supplémentaires",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "14",
+              "title": "Les classes hybrides",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "15",
+              "title": "Les classes occultes",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "16",
+          "title": "Les familiers",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "17",
+          "title": "Les compagnons animaux",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "18",
+          "title": "Les archétypes de classe",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "19",
+          "title": "Les classes de prestige",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "20",
+          "title": "Les compétences",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "21",
+          "title": "Les dons",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "22",
+          "title": "Les traits de personnage",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "23",
+          "title": "L’alignement",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "24",
+          "title": "L’état civil et les mensurations",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "25",
+          "title": "L’historique du personnage",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "26",
+              "title": "Générateur d’historique",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "27",
+          "title": "La progression des personnages",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "28",
+              "title": "Au-delà du niveau 20",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "29",
+              "title": "Le réapprentissage",
+              "type": "item",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "30",
+      "title": "L’équipement",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "31",
+          "title": "Les armes",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "32",
+              "title": "Les armes à feu",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "33",
+              "title": "Les engins de siège",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "34",
+          "title": "Les armures",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "35",
+          "title": "Les matériaux spéciaux",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "36",
+          "title": "Les marchandises et les services",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "37",
+          "title": "Les objets alchimiques",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "38",
+          "title": "L’argent et la richesse",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "39",
+              "title": "Les marchandises",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "40",
+              "title": "Le poids transportable",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "41",
+          "title": "Les réactifs alchimiques",
+          "type": "item",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "42",
+      "title": "Les objets magiques",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "43",
+          "title": "Règles relatives aux objets magiques",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "44",
+          "title": "Description des objets magiques",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "45",
+          "title": "Création d’objets magiques",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "46",
+          "title": "Objets magiques par catégorie",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "47",
+          "title": "Les artefacts",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "48",
+          "title": "Les objets intelligents",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "49",
+          "title": "Les objets maudits",
+          "type": "item",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "50",
+      "title": "L’exploration",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "51",
+          "title": "Les types de déplacement",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "52",
+              "title": "Déplacement tactique",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "53",
+              "title": "Déplacement sur courte distance",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "54",
+              "title": "Déplacement sur longue distance",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "55",
+          "title": "Évasion et poursuite",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "56",
+          "title": "La survie",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "57",
+          "title": "La vision et la lumière",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "58",
+          "title": "L’intrusion et le maraudage",
+          "type": "item",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "59",
+      "title": "La magie",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "60",
+          "title": "Lancer des sorts",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "61",
+          "title": "Présentation des sorts",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "62",
+          "title": "La magie profane",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "63",
+          "title": "La magie divine",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "64",
+          "title": "La magie psychique",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "65",
+          "title": "Les pouvoirs spéciaux",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "66",
+          "title": "Liste alphabétique des sorts (de A à D, de E à O, de P à Z)",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "67",
+          "title": "Liste des sorts par classe",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "68",
+          "title": "Liste des sorts par registre",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "69",
+          "title": "Les duels de sorts",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "70",
+          "title": "Les grimoires",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "71",
+          "title": "Construire et modifier des créatures artificielles",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "72",
+          "title": "Lier un extérieur",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "73",
+          "title": "Les mots de pouvoir",
+          "type": "item",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "74",
+      "title": "Le combat",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "75",
+          "title": "Le déroulement d’un combat",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "76",
+          "title": "Les valeurs de combat",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "77",
+          "title": "Les actions en combat",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "78",
+          "title": "Les blessures et la mort",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "79",
+          "title": "Les déplacements en combat",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "80",
+          "title": "Les petites et grandes créatures",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "81",
+          "title": "Les modificateurs de combat",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "82",
+          "title": "Les actions spéciales",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "83",
+          "title": "Les actions modifiant l’initiative",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "84",
+          "title": "Les états préjudiciables",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "85",
+          "title": "Les règles spéciales",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "86",
+          "title": "Les combats de spectacle",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "87",
+          "title": "Les duels",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "88",
+          "title": "Les points héroïques",
+          "type": "item",
+          "children": []
+        },
+        {
+          "id": "89",
+          "title": "Règles alternatives de l’AG",
+          "type": "item",
+          "children": []
+        }
+      ]
+    }
+  ],
   "mainContent": "\n                <h2>Bienvenue sur le wiki de Transcendant !</h2>\n                <p>Ce site rassemble toutes les informations nécessaires pour jouer au jeu de rôle Transcendant.</p>\n                <p>Utilisez la barre de navigation pour explorer les différentes sections.</p><p><br></p><p><br></p>\n            ",
-  "hiddenItems": [
-    "1"
-  ]
+  "hiddenItems": []
 }
