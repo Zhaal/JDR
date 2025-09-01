@@ -1,5 +1,12 @@
-document.addEventListener('DOMContentLoaded', function() {
-    loadSavedWiki();
+const GITHUB_CONFIG = {
+    owner: 'OWNER', // Remplacer par l'utilisateur GitHub
+    repo: 'REPO',   // Remplacer par le nom du dépôt
+    filePath: 'data/wiki.json',
+    token: ''       // Ajouter un token GitHub avec droits de commit
+};
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadSavedWiki();
     assignNavIds();
     loadHiddenItems();
     initializeNavigation();
@@ -19,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const logoutBtn = document.getElementById('logout-button');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', disableEditing);
+        logoutBtn.addEventListener('click', logoutAndSave);
     }
 
     const insertTableBtn = document.getElementById('insert-table');
@@ -158,15 +165,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function loadSavedWiki() {
+    async function loadSavedWiki() {
+        try {
+            const response = await fetch('data/wiki.json', { cache: 'no-cache' });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.sideNav) {
+                    document.getElementById('side-nav').innerHTML = data.sideNav;
+                } else {
+                    const savedNav = localStorage.getItem('sideNav');
+                    if (savedNav) document.getElementById('side-nav').innerHTML = savedNav;
+                }
+                if (data.mainContent) {
+                    document.getElementById('main-content').innerHTML = data.mainContent;
+                } else {
+                    const savedContent = localStorage.getItem('mainContent');
+                    if (savedContent) document.getElementById('main-content').innerHTML = savedContent;
+                }
+                if (data.hiddenItems) {
+                    localStorage.setItem('hiddenItems', JSON.stringify(data.hiddenItems));
+                }
+                return;
+            }
+        } catch (e) {
+            console.warn('Chargement distant impossible, utilisation du stockage local');
+        }
         const savedNav = localStorage.getItem('sideNav');
         const savedContent = localStorage.getItem('mainContent');
-        if (savedNav) {
-            document.getElementById('side-nav').innerHTML = savedNav;
-        }
-        if (savedContent) {
-            document.getElementById('main-content').innerHTML = savedContent;
-        }
+        if (savedNav) document.getElementById('side-nav').innerHTML = savedNav;
+        if (savedContent) document.getElementById('main-content').innerHTML = savedContent;
     }
 
     function saveWiki() {
@@ -186,6 +213,73 @@ document.addEventListener('DOMContentLoaded', function() {
         const clone = main.cloneNode(true);
         clone.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
         localStorage.setItem('mainContent', clone.innerHTML);
+    }
+
+    async function logoutAndSave() {
+        showSaveOverlay();
+        disableEditing();
+        try {
+            await saveWikiOnline();
+        } catch (e) {
+            alert('Erreur lors de la sauvegarde en ligne');
+        }
+        hideSaveOverlay();
+    }
+
+    function showSaveOverlay() {
+        const overlay = document.getElementById('save-overlay');
+        if (overlay) overlay.classList.remove('hidden');
+    }
+
+    function hideSaveOverlay() {
+        const overlay = document.getElementById('save-overlay');
+        if (overlay) overlay.classList.add('hidden');
+    }
+
+    async function saveWikiOnline() {
+        if (!GITHUB_CONFIG.token) {
+            console.warn('Token GitHub manquant, sauvegarde en ligne ignorée.');
+            return;
+        }
+
+        const sideNav = document.getElementById('side-nav').cloneNode(true);
+        sideNav.querySelectorAll('.edit-btn').forEach(btn => btn.remove());
+        const main = document.getElementById('main-content').cloneNode(true);
+        main.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
+        const data = {
+            sideNav: sideNav.innerHTML,
+            mainContent: main.innerHTML,
+            hiddenItems: JSON.parse(localStorage.getItem('hiddenItems') || '[]')
+        };
+
+        const { owner, repo, filePath, token } = GITHUB_CONFIG;
+        const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+
+        let sha;
+        const getResp = await fetch(apiUrl, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (getResp.ok) {
+            const info = await getResp.json();
+            sha = info.sha;
+        }
+
+        const putResp = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: 'Mise à jour du wiki',
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))) ,
+                sha
+            })
+        });
+
+        if (!putResp.ok) {
+            throw new Error('Échec de la sauvegarde GitHub');
+        }
     }
 
     function loadHiddenItems() {
