@@ -2,7 +2,7 @@ const GITHUB_CONFIG = {
     owner: 'Zhaal', // Remplacer par l'utilisateur GitHub
     repo: 'JDR',   // Remplacer par le nom du dépôt
     filePath: 'data/wiki.json',
-    token: '${GITHUB_TOKEN}'       // Ajouter un token GitHub avec droits de commit
+    token: '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'       // Ajouter un token GitHub avec droits de commit
 };
 
 document.addEventListener('DOMContentLoaded', async function() {
