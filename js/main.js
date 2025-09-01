@@ -73,14 +73,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (loginArea) loginArea.classList.add('hidden');
         const toolbar = document.getElementById('edit-toolbar');
         if (toolbar) toolbar.classList.remove('hidden');
+        const editorPanel = document.getElementById('editor-panel');
+        if (editorPanel) editorPanel.classList.remove('hidden');
         document.body.classList.add('editor-mode');
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
             mainContent.contentEditable = 'true';
             mainContent.addEventListener('input', saveWiki);
         }
-        addNavEditButtons();
         addTableDeleteButtons();
+        initializeEditorPanel();
     }
 
     function disableEditing() {
@@ -88,161 +90,207 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (loginArea) loginArea.classList.remove('hidden');
         const toolbar = document.getElementById('edit-toolbar');
         if (toolbar) toolbar.classList.add('hidden');
+        const editorPanel = document.getElementById('editor-panel');
+        if (editorPanel) editorPanel.classList.add('hidden');
         document.body.classList.remove('editor-mode');
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
             mainContent.contentEditable = 'false';
             mainContent.removeEventListener('input', saveWiki);
         }
-        document.querySelectorAll('#side-nav .edit-btn').forEach(btn => btn.remove());
         document.querySelectorAll('.delete-table-btn').forEach(btn => btn.remove());
     }
 
-    function addNavEditButtons() {
-        // Clear existing buttons
-        document.querySelectorAll('#side-nav .edit-btn').forEach(btn => btn.remove());
-        const sideNav = document.getElementById('side-nav');
-        const mainUl = sideNav.querySelector('ul');
+    function initializeEditorPanel() {
+        const chapterSelect = document.getElementById('chapter-select');
+        const subchapterSelect = document.getElementById('subchapter-select');
+        const itemSelect = document.getElementById('item-select');
+        const nameInput = document.getElementById('item-name');
+        const addBtn = document.getElementById('add-btn');
+        const renameBtn = document.getElementById('rename-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const toggleHideBtn = document.getElementById('toggle-hide-btn');
+        const itemTypeSelect = document.getElementById('item-type-select');
 
-        const addChapterBtn = document.createElement('button');
-        addChapterBtn.textContent = 'Ajouter un chapitre';
-        addChapterBtn.className = 'edit-btn';
-        addChapterBtn.style.marginLeft = '10px'; // Add some style to position it nicely
-        addChapterBtn.addEventListener('click', () => {
-            const title = prompt('Nom du chapitre:');
-            if (title) {
-                const id = Date.now().toString();
-                const li = document.createElement('li');
-                li.dataset.id = id;
+        function populateChapters() {
+            chapterSelect.innerHTML = '<option value="">Nouveau Chapitre</option>';
+            const chapterElements = document.querySelectorAll('#side-nav > ul > li');
+            chapterElements.forEach(li => {
+                const span = li.querySelector(':scope > .category-toggle');
+                if (span) {
+                    const option = new Option(span.textContent, li.dataset.id);
+                    chapterSelect.add(option);
+                }
+            });
+        }
 
+        function populateSubchapters() {
+            subchapterSelect.innerHTML = '<option value="">Nouveau Sous-chapitre</option>';
+            subchapterSelect.disabled = true;
+            const chapterId = chapterSelect.value;
+            if (!chapterId) return;
+
+            const chapterLi = document.querySelector(`#side-nav li[data-id="${chapterId}"]`);
+            const subLis = chapterLi.querySelectorAll(':scope > ul > li');
+            subLis.forEach(li => {
+                const span = li.querySelector(':scope > .category-toggle');
+                if(span) {
+                    const option = new Option(span.textContent, li.dataset.id);
+                    subchapterSelect.add(option);
+                }
+            });
+            subchapterSelect.disabled = false;
+        }
+
+        function populateItems() {
+            itemSelect.innerHTML = '<option value="">Nouvel Élément</option>';
+            itemSelect.disabled = true;
+            const subChapterId = subchapterSelect.value;
+            if (!subChapterId) return;
+
+            const subChapterLi = document.querySelector(`#side-nav li[data-id="${subChapterId}"]`);
+            const itemLis = subChapterLi.querySelectorAll(':scope > ul > li');
+            itemLis.forEach(li => {
+                const a = li.querySelector(':scope > a');
+                if(a) {
+                    const option = new Option(a.textContent, li.dataset.id);
+                    itemSelect.add(option);
+                }
+            });
+            itemSelect.disabled = false;
+        }
+
+        function updateButtonStates() {
+            const chapterId = chapterSelect.value;
+            const subChapterId = subchapterSelect.value;
+            const itemId = itemSelect.value;
+            const name = nameInput.value.trim();
+
+            renameBtn.disabled = !(name && (itemId || subChapterId || chapterId));
+            deleteBtn.disabled = !(itemId || subChapterId || chapterId);
+            toggleHideBtn.disabled = !(itemId || subChapterId || chapterId);
+            addBtn.disabled = !name;
+            itemTypeSelect.disabled = !(chapterId && !subChapterId);
+        }
+
+        chapterSelect.addEventListener('change', () => {
+            populateSubchapters();
+            populateItems(); // will be disabled if no subchapter is selected
+            updateButtonStates();
+        });
+
+        subchapterSelect.addEventListener('change', () => {
+            populateItems();
+            updateButtonStates();
+        });
+
+        itemSelect.addEventListener('change', updateButtonStates);
+        nameInput.addEventListener('input', updateButtonStates);
+
+        addBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            const chapterId = chapterSelect.value;
+            const subChapterId = subchapterSelect.value;
+
+            let parentLi;
+            let type;
+
+            if (!chapterId) { // New chapter
+                parentLi = document.getElementById('side-nav');
+                type = 'chapter';
+            } else if (chapterId && !subChapterId) { // New sub-item for a chapter
+                parentLi = document.querySelector(`#side-nav li[data-id="${chapterId}"]`);
+                type = itemTypeSelect.value;
+            } else { // New item for a sub-chapter
+                parentLi = document.querySelector(`#side-nav li[data-id="${subChapterId}"]`);
+                type = 'item';
+            }
+
+            let parentUl = parentLi.querySelector(':scope > ul');
+            if (!parentUl) {
+                parentUl = document.createElement('ul');
+                parentUl.className = 'submenu open';
+                parentLi.appendChild(parentUl);
+                const toggle = parentLi.querySelector('.category-toggle');
+                if (toggle) toggle.classList.add('open');
+            }
+
+            const newLi = createNavItem(name, type);
+            parentUl.appendChild(newLi);
+
+            saveWiki();
+            refreshPanel();
+        });
+
+        renameBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            const id = itemSelect.value || subchapterSelect.value || chapterSelect.value;
+            if (!id) return;
+
+            const li = document.querySelector(`#side-nav li[data-id="${id}"]`);
+            const target = li.querySelector(':scope > a, :scope > .category-toggle');
+            target.textContent = name;
+            saveWiki();
+            refreshPanel();
+        });
+
+        deleteBtn.addEventListener('click', () => {
+            const id = itemSelect.value || subchapterSelect.value || chapterSelect.value;
+            if (!id) return;
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet élément et tous ses enfants ?')) {
+                const li = document.querySelector(`#side-nav li[data-id="${id}"]`);
+                li.remove();
+                saveWiki();
+                refreshPanel();
+            }
+        });
+
+        toggleHideBtn.addEventListener('click', () => {
+            const id = itemSelect.value || subchapterSelect.value || chapterSelect.value;
+            if (!id) return;
+
+            const li = document.querySelector(`#side-nav li[data-id="${id}"]`);
+            const isHidden = li.classList.toggle('hidden-item');
+            updateHiddenItems(id, isHidden);
+            saveWiki();
+            // No need to refresh the whole panel, but we should update the button text
+            toggleHideBtn.textContent = isHidden ? 'Afficher' : 'Cacher';
+        });
+
+        function createNavItem(name, type) {
+            const li = document.createElement('li');
+            li.dataset.id = Date.now().toString();
+            if (type === 'item') {
+                const a = document.createElement('a');
+                a.href = '#';
+                a.textContent = name;
+                li.appendChild(a);
+            } else {
                 const span = document.createElement('span');
                 span.className = 'category-toggle';
-                span.textContent = title;
+                span.textContent = name;
                 li.appendChild(span);
-
-                mainUl.appendChild(li);
-
-                // Re-initialize edit buttons for the new element and its children
-                addNavEditButtons();
-                saveWiki();
+                const ul = document.createElement('ul');
+                ul.className = 'submenu';
+                li.appendChild(ul);
             }
-        });
-        const h3 = sideNav.querySelector('h3');
-        h3.insertAdjacentElement('afterend', addChapterBtn);
+            return li;
+        }
 
-        const items = document.querySelectorAll('#side-nav li');
-        items.forEach(li => {
-            const target = li.querySelector('.category-toggle, a');
-            if (!target) return;
-            const id = li.dataset.id;
+        function refreshPanel() {
+            populateChapters();
+            populateSubchapters();
+            populateItems();
+            nameInput.value = '';
+            updateButtonStates();
+        }
 
-            const renameBtn = document.createElement('button');
-            renameBtn.textContent = 'Renommer';
-            renameBtn.className = 'edit-btn';
-            renameBtn.addEventListener('click', () => {
-                const newName = prompt('Nouveau nom:', target.textContent.trim());
-                if (newName) {
-                    target.textContent = newName;
-                    saveWiki();
-                }
-            });
-
-            const hideBtn = document.createElement('button');
-            hideBtn.textContent = li.classList.contains('hidden-item') ? 'Afficher' : 'Cacher';
-            hideBtn.className = 'edit-btn';
-            hideBtn.addEventListener('click', () => {
-                const isHidden = li.classList.toggle('hidden-item');
-                hideBtn.textContent = isHidden ? 'Afficher' : 'Cacher';
-                updateHiddenItems(id, isHidden);
-                saveWiki();
-            });
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Supprimer';
-            deleteBtn.className = 'edit-btn';
-            deleteBtn.addEventListener('click', () => {
-                if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
-                    li.remove();
-                    updateHiddenItems(id, false);
-                    saveWiki();
-                }
-            });
-
-            li.appendChild(renameBtn);
-            li.appendChild(hideBtn);
-            li.appendChild(deleteBtn);
-
-            if (target.matches('.category-toggle')) {
-                const addSubItemBtn = document.createElement('button');
-                addSubItemBtn.textContent = 'Ajouter Elément';
-                addSubItemBtn.className = 'edit-btn';
-                addSubItemBtn.addEventListener('click', () => {
-                    const title = prompt('Nom de l\'élément:');
-                    if (title) {
-                        const newId = Date.now().toString();
-                        let submenu = li.querySelector('ul.submenu');
-                        if (!submenu) {
-                            submenu = document.createElement('ul');
-                            submenu.className = 'submenu'; // It will be opened by the next lines
-                            li.appendChild(submenu);
-                        }
-                        // Make sure the parent toggle is open
-                        target.classList.add('open');
-                        submenu.classList.add('open');
-
-                        const newItemLi = document.createElement('li');
-                        newItemLi.dataset.id = newId;
-
-                        const a = document.createElement('a');
-                        a.href = '#';
-                        a.textContent = title;
-                        newItemLi.appendChild(a);
-
-                        submenu.appendChild(newItemLi);
-
-                        // Re-initialize buttons to cover the new element
-                        addNavEditButtons();
-                        saveWiki();
-                    }
-                });
-
-                const addSubChapterBtn = document.createElement('button');
-                addSubChapterBtn.textContent = 'Ajouter Sous-chapitre';
-                addSubChapterBtn.className = 'edit-btn';
-                addSubChapterBtn.addEventListener('click', () => {
-                    const title = prompt('Nom du sous-chapitre:');
-                    if (title) {
-                        const newId = Date.now().toString();
-                        let submenu = li.querySelector('ul.submenu');
-                        if (!submenu) {
-                            submenu = document.createElement('ul');
-                            submenu.className = 'submenu'; // It will be opened by the next lines
-                            li.appendChild(submenu);
-                        }
-                        // Make sure the parent toggle is open
-                        target.classList.add('open');
-                        submenu.classList.add('open');
-
-                        const newSubChapterLi = document.createElement('li');
-                        newSubChapterLi.dataset.id = newId;
-
-                        const span = document.createElement('span');
-                        span.className = 'category-toggle';
-                        span.textContent = title;
-                        newSubChapterLi.appendChild(span);
-
-                        submenu.appendChild(newSubChapterLi);
-
-                        // Re-initialize buttons to cover the new element
-                        addNavEditButtons();
-                        saveWiki();
-                    }
-                });
-
-                li.appendChild(addSubItemBtn);
-                li.appendChild(addSubChapterBtn);
-            }
-        });
+        refreshPanel();
     }
 
     function addTableDeleteButtons() {
