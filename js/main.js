@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', async function() {
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
     let wikiPages = {};
     let currentPageId = null;
     let setupNavSelectionHandler = null;
@@ -700,6 +709,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     function saveWiki() {
         saveSideNav();
         saveMainContent();
+        debouncedSaveOnline();
     }
 
     function buildSideNavJson(element) {
@@ -735,13 +745,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     async function saveOnline() {
-        showSaveOverlay();
         try {
             await saveWikiOnline();
+            alert('Sauvegarde manuelle effectuée.');
         } catch (e) {
             alert('Erreur lors de la sauvegarde en ligne');
         }
-        hideSaveOverlay();
     }
 
     function showSaveOverlay() {
@@ -753,6 +762,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         const overlay = document.getElementById('save-overlay');
         if (overlay) overlay.classList.add('hidden');
     }
+
+    const debouncedSaveOnline = debounce(async () => {
+        try {
+            await saveWikiOnline();
+            console.log("Sauvegarde automatique réussie.");
+        } catch (e) {
+            console.error("Erreur lors de la sauvegarde automatique:", e);
+            alert("Une erreur est survenue lors de la sauvegarde automatique. Vos dernières modifications n'ont peut-être pas été enregistrées en ligne.");
+        }
+    }, 2000);
 
     async function saveWikiOnline() {
         // First, ensure the current page's content is up-to-date in wikiPages
