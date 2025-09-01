@@ -1,0 +1,53 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "pages"
+    label: "Pages"
+    files:
+      - file: "index.html"
+        label: "Accueil"
+        name: "accueil"
+        format: "html"
+        fields:
+          - { label: "Titre", name: "title", widget: "string" }
+          - { label: "Contenu", name: "body", widget: "markdown" }
+      - file: "pages/bestiaire.html"
+        label: "Bestiaire"
+        name: "bestiaire"
+        format: "html"
+        fields:
+          - { label: "Titre", name: "title", widget: "string" }
+          - { label: "Contenu", name: "body", widget: "markdown" }
+      - file: "pages/equipement.html"
+        label: "Équipement"
+        name: "equipement"
+        format: "html"
+        fields:
+          - { label: "Titre", name: "title", widget: "string" }
+          - { label: "Contenu", name: "body", widget: "markdown" }
+      - file: "pages/personnages.html"
+        label: "Personnages"
+        name: "personnages"
+        format: "html"
+        fields:
+          - { label: "Titre", name: "title", widget: "string" }
+          - { label: "Contenu", name: "body", widget: "markdown" }
+      - file: "pages/regles.html"
+        label: "Règles"
+        name: "regles"
+        format: "html"
+        fields:
+          - { label: "Titre", name: "title", widget: "string" }
+          - { label: "Contenu", name: "body", widget: "markdown" }
+      - file: "pages/univers.html"
+        label: "Univers"
+        name: "univers"
+        format: "html"
+        fields:
+          - { label: "Titre", name: "title", widget: "string" }
+          - { label: "Contenu", name: "body", widget: "markdown" }
