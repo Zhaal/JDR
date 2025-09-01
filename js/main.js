@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
                 const target = li.querySelector(':scope > a, :scope > .category-toggle');
                 if (target) {
-                    li.insertBefore(icon, target);
+                    target.prepend(icon);
                 }
             });
         }
