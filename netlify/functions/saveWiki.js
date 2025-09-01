@@ -1,3 +1,5 @@
+const fetch = require('node-fetch');
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -42,6 +44,15 @@ exports.handler = async (event) => {
     }
 
 
+    const payload = {
+      message: 'Mise à jour wiki.json via Netlify',
+      content,
+    };
+
+    if (sha) {
+      payload.sha = sha;
+    }
+
     const putRes = await fetch(apiUrl, {
       method: 'PUT',
       headers: {
@@ -49,11 +60,7 @@ exports.handler = async (event) => {
         'Content-Type': 'application/json',
         'User-Agent': 'netlify-function-fetch'
       },
-      body: JSON.stringify({
-        message: 'Mise à jour wiki.json via Netlify',
-        content,
-        sha
-      })
+      body: JSON.stringify(payload)
     });
 
     if (!putRes.ok) {
