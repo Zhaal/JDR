@@ -112,15 +112,119 @@ document.addEventListener('DOMContentLoaded', async function() {
         const toggleHideBtn = document.getElementById('toggle-hide-btn');
         const itemTypeSelect = document.getElementById('item-type-select');
 
+        let currentEditingMode = null; // Can be 'delete', 'rename', 'hide'
+
+        function toggleEditingMode(mode) {
+            if (currentEditingMode === mode) {
+                currentEditingMode = null;
+            } else {
+                currentEditingMode = mode;
+            }
+            updateNavItemsUI();
+            updateEditorPanelUI();
+        }
+
+        function updateNavItemsUI() {
+            document.querySelectorAll('.edit-icon').forEach(icon => icon.remove());
+            document.body.classList.remove('delete-mode-active', 'rename-mode-active', 'hide-mode-active');
+
+            if (!currentEditingMode) {
+                return;
+            }
+
+            document.body.classList.add(`${currentEditingMode}-mode-active`);
+
+            const items = document.querySelectorAll('#side-nav li');
+            items.forEach(li => {
+                const icon = document.createElement('span');
+                icon.className = `edit-icon ${currentEditingMode}-icon`;
+
+                if (currentEditingMode === 'hide') {
+                    icon.className += li.classList.contains('hidden-item') ? ' is-hidden' : ' is-visible';
+                    icon.innerHTML = `<span class="icon-eye"></span>`;
+                } else if (currentEditingMode === 'delete') {
+                    icon.innerHTML = `[X]`;
+                } else if (currentEditingMode === 'rename') {
+                    icon.innerHTML = `[R]`;
+                }
+
+                icon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handleIconClick(li, currentEditingMode);
+                });
+
+                const target = li.querySelector(':scope > a, :scope > .category-toggle');
+                if (target) {
+                    li.insertBefore(icon, target);
+                }
+            });
+        }
+
+        function handleIconClick(li, mode) {
+            const id = li.dataset.id;
+            if (!id) return;
+
+            if (mode === 'delete') {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cet élément et tous ses enfants ?')) {
+                    li.remove();
+                    saveWiki();
+                }
+            } else if (mode === 'rename') {
+                const target = li.querySelector(':scope > a, :scope > .category-toggle');
+                const newName = prompt('Entrez le nouveau nom :', target.textContent);
+                if (newName && newName.trim() !== '') {
+                    target.textContent = newName.trim();
+                    saveWiki();
+                }
+            } else if (mode === 'hide') {
+                const isHidden = li.classList.toggle('hidden-item');
+                updateHiddenItems(id, isHidden);
+                saveWiki();
+                // Update icon state
+                const icon = li.querySelector('.hide-icon');
+                if (icon) {
+                    icon.classList.toggle('is-hidden', isHidden);
+                    icon.classList.toggle('is-visible', !isHidden);
+                }
+            }
+        }
+
+        function updateEditorPanelUI() {
+            const selectionControls = document.getElementById('item-selection-controls');
+            const addControls = document.getElementById('add-item-controls');
+
+            // Reset buttons text and state
+            renameBtn.textContent = 'Renommer';
+            deleteBtn.textContent = 'Supprimer';
+            toggleHideBtn.textContent = 'Cacher/Afficher';
+            [renameBtn, deleteBtn, toggleHideBtn].forEach(btn => btn.classList.remove('active'));
+
+            if (currentEditingMode) {
+                selectionControls.style.display = 'none';
+                addControls.style.display = 'none';
+
+                if (currentEditingMode === 'delete') {
+                    deleteBtn.textContent = 'Annuler';
+                    deleteBtn.classList.add('active');
+                } else if (currentEditingMode === 'rename') {
+                    renameBtn.textContent = 'Annuler';
+                    renameBtn.classList.add('active');
+                } else if (currentEditingMode === 'hide') {
+                    toggleHideBtn.textContent = 'Terminer';
+                    toggleHideBtn.classList.add('active');
+                }
+            } else {
+                selectionControls.style.display = 'block';
+                addControls.style.display = 'block';
+                refreshPanel();
+            }
+        }
+
         function populateChapters() {
             chapterSelect.innerHTML = '<option value="">Nouveau Chapitre</option>';
-            const chapterElements = document.querySelectorAll('#side-nav > ul > li');
-            chapterElements.forEach(li => {
+            document.querySelectorAll('#side-nav > ul > li').forEach(li => {
                 const span = li.querySelector(':scope > .category-toggle');
-                if (span) {
-                    const option = new Option(span.textContent, li.dataset.id);
-                    chapterSelect.add(option);
-                }
+                if (span) chapterSelect.add(new Option(span.textContent, li.dataset.id));
             });
         }
 
@@ -131,13 +235,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!chapterId) return;
 
             const chapterLi = document.querySelector(`#side-nav li[data-id="${chapterId}"]`);
-            const subLis = chapterLi.querySelectorAll(':scope > ul > li');
-            subLis.forEach(li => {
+            chapterLi.querySelectorAll(':scope > ul > li').forEach(li => {
                 const span = li.querySelector(':scope > .category-toggle');
-                if(span) {
-                    const option = new Option(span.textContent, li.dataset.id);
-                    subchapterSelect.add(option);
-                }
+                if(span) subchapterSelect.add(new Option(span.textContent, li.dataset.id));
             });
             subchapterSelect.disabled = false;
         }
@@ -149,13 +249,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!subChapterId) return;
 
             const subChapterLi = document.querySelector(`#side-nav li[data-id="${subChapterId}"]`);
-            const itemLis = subChapterLi.querySelectorAll(':scope > ul > li');
-            itemLis.forEach(li => {
+            subChapterLi.querySelectorAll(':scope > ul > li').forEach(li => {
                 const a = li.querySelector(':scope > a');
-                if(a) {
-                    const option = new Option(a.textContent, li.dataset.id);
-                    itemSelect.add(option);
-                }
+                if(a) itemSelect.add(new Option(a.textContent, li.dataset.id));
             });
             itemSelect.disabled = false;
         }
@@ -163,19 +259,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         function updateButtonStates() {
             const chapterId = chapterSelect.value;
             const subChapterId = subchapterSelect.value;
-            const itemId = itemSelect.value;
             const name = nameInput.value.trim();
-
-            renameBtn.disabled = !(name && (itemId || subChapterId || chapterId));
-            deleteBtn.disabled = !(itemId || subChapterId || chapterId);
-            toggleHideBtn.disabled = !(itemId || subChapterId || chapterId);
             addBtn.disabled = !name;
             itemTypeSelect.disabled = !(chapterId && !subChapterId);
         }
 
         chapterSelect.addEventListener('change', () => {
             populateSubchapters();
-            populateItems(); // will be disabled if no subchapter is selected
+            populateItems();
             updateButtonStates();
         });
 
@@ -193,17 +284,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             const chapterId = chapterSelect.value;
             const subChapterId = subchapterSelect.value;
+            let parentLi, type;
 
-            let parentLi;
-            let type;
-
-            if (!chapterId) { // New chapter
+            if (!chapterId) {
                 parentLi = document.getElementById('side-nav');
                 type = 'chapter';
-            } else if (chapterId && !subChapterId) { // New sub-item for a chapter
+            } else if (!subChapterId) {
                 parentLi = document.querySelector(`#side-nav li[data-id="${chapterId}"]`);
                 type = itemTypeSelect.value;
-            } else { // New item for a sub-chapter
+            } else {
                 parentLi = document.querySelector(`#side-nav li[data-id="${subChapterId}"]`);
                 type = 'item';
             }
@@ -216,51 +305,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const toggle = parentLi.querySelector('.category-toggle');
                 if (toggle) toggle.classList.add('open');
             }
-
-            const newLi = createNavItem(name, type);
-            parentUl.appendChild(newLi);
-
+            parentUl.appendChild(createNavItem(name, type));
             saveWiki();
             refreshPanel();
         });
 
-        renameBtn.addEventListener('click', () => {
-            const name = nameInput.value.trim();
-            if (!name) return;
-
-            const id = itemSelect.value || subchapterSelect.value || chapterSelect.value;
-            if (!id) return;
-
-            const li = document.querySelector(`#side-nav li[data-id="${id}"]`);
-            const target = li.querySelector(':scope > a, :scope > .category-toggle');
-            target.textContent = name;
-            saveWiki();
-            refreshPanel();
-        });
-
-        deleteBtn.addEventListener('click', () => {
-            const id = itemSelect.value || subchapterSelect.value || chapterSelect.value;
-            if (!id) return;
-
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet élément et tous ses enfants ?')) {
-                const li = document.querySelector(`#side-nav li[data-id="${id}"]`);
-                li.remove();
-                saveWiki();
-                refreshPanel();
-            }
-        });
-
-        toggleHideBtn.addEventListener('click', () => {
-            const id = itemSelect.value || subchapterSelect.value || chapterSelect.value;
-            if (!id) return;
-
-            const li = document.querySelector(`#side-nav li[data-id="${id}"]`);
-            const isHidden = li.classList.toggle('hidden-item');
-            updateHiddenItems(id, isHidden);
-            saveWiki();
-            // No need to refresh the whole panel, but we should update the button text
-            toggleHideBtn.textContent = isHidden ? 'Afficher' : 'Cacher';
-        });
+        deleteBtn.addEventListener('click', () => toggleEditingMode('delete'));
+        renameBtn.addEventListener('click', () => toggleEditingMode('rename'));
+        toggleHideBtn.addEventListener('click', () => toggleEditingMode('hide'));
 
         function createNavItem(name, type) {
             const li = document.createElement('li');
