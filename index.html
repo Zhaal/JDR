@@ -23,49 +23,17 @@
             </div>
             <div id="editor-panel" class="hidden">
                 <h3>Éditeur de Navigation</h3>
-                <div id="editor-controls">
-                    <div id="item-selection-controls">
-                        <div class="control-group">
-                            <label for="chapter-select">Chapitre:</label>
-                            <select id="chapter-select">
-                                <option value="">Nouveau Chapitre</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label for="subchapter-select">Sous-chapitre:</label>
-                            <select id="subchapter-select" disabled>
-                                <option value="">Nouveau Sous-chapitre</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label for="item-select">Élément:</label>
-                            <select id="item-select" disabled>
-                                <option value="">Nouvel Élément</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="add-item-controls">
-                        <div class="control-group">
-                            <label for="item-type-select">Type (si nouveau sous-chapitre):</label>
-                            <select id="item-type-select" disabled>
-                                <option value="sub-chapter">Sous-chapitre</option>
-                                <option value="item">Élément</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label for="item-name">Nom:</label>
-                            <input type="text" id="item-name" placeholder="Nom de l'élément">
-                        </div>
-                        <div class="action-buttons">
-                            <button id="add-btn" disabled>Ajouter</button>
-                        </div>
-                    </div>
-                    <hr>
+                <div id="editor-main-view">
                     <div class="action-buttons">
                         <button id="rename-btn">Renommer</button>
                         <button id="delete-btn">Supprimer</button>
                         <button id="toggle-hide-btn">Cacher/Afficher</button>
                     </div>
+                    <hr>
+                    <button id="create-edit-btn">Créer ou Editer un élément</button>
+                </div>
+                <div id="editor-workflow-view" class="hidden">
+                    <!-- This will be populated by JavaScript -->
                 </div>
             </div>
         </header>
@@ -73,6 +41,7 @@
             <aside id="sidebar">
                 <nav id="side-nav">
                     <h3>POUR LES JOUEURS…</h3>
+                    <button id="edit-menu-btn" class="hidden">Editer le menu</button>
                     <ul>
                         <li>
                             <span class="category-toggle">Règles de base</span>

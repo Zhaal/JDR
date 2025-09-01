@@ -27,6 +27,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         saveBtn.addEventListener('click', saveOnline);
     }
 
+    const editMenuBtn = document.getElementById('edit-menu-btn');
+    if (editMenuBtn) {
+        editMenuBtn.addEventListener('click', () => {
+            const editorPanel = document.getElementById('editor-panel');
+            if (editorPanel) {
+                editorPanel.classList.toggle('hidden');
+            }
+            if (editMenuBtn.textContent === 'Editer le menu') {
+                editMenuBtn.textContent = "Fermer l'éditeur";
+            } else {
+                editMenuBtn.textContent = 'Editer le menu';
+            }
+        });
+    }
+
     const insertTableBtn = document.getElementById('insert-table');
     if (insertTableBtn) {
         insertTableBtn.addEventListener('click', () => {
@@ -73,8 +88,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (loginArea) loginArea.classList.add('hidden');
         const toolbar = document.getElementById('edit-toolbar');
         if (toolbar) toolbar.classList.remove('hidden');
-        const editorPanel = document.getElementById('editor-panel');
-        if (editorPanel) editorPanel.classList.remove('hidden');
+        const editMenuBtn = document.getElementById('edit-menu-btn');
+        if (editMenuBtn) editMenuBtn.classList.remove('hidden');
         document.body.classList.add('editor-mode');
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
@@ -92,6 +107,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (toolbar) toolbar.classList.add('hidden');
         const editorPanel = document.getElementById('editor-panel');
         if (editorPanel) editorPanel.classList.add('hidden');
+        const editMenuBtn = document.getElementById('edit-menu-btn');
+        if (editMenuBtn) {
+            editMenuBtn.classList.add('hidden');
+            editMenuBtn.textContent = 'Editer le menu';
+        }
         document.body.classList.remove('editor-mode');
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
@@ -102,17 +122,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function initializeEditorPanel() {
-        const chapterSelect = document.getElementById('chapter-select');
-        const subchapterSelect = document.getElementById('subchapter-select');
-        const itemSelect = document.getElementById('item-select');
-        const nameInput = document.getElementById('item-name');
-        const addBtn = document.getElementById('add-btn');
+        const mainView = document.getElementById('editor-main-view');
+        const workflowView = document.getElementById('editor-workflow-view');
+        const createEditBtn = document.getElementById('create-edit-btn');
         const renameBtn = document.getElementById('rename-btn');
         const deleteBtn = document.getElementById('delete-btn');
         const toggleHideBtn = document.getElementById('toggle-hide-btn');
-        const itemTypeSelect = document.getElementById('item-type-select');
 
-        let currentEditingMode = null; // Can be 'delete', 'rename', 'hide'
+        let currentEditingMode = null; // 'delete', 'rename', 'hide'
+        let workflowHistory = [];
 
         function toggleEditingMode(mode) {
             if (currentEditingMode === mode) {
@@ -128,12 +146,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.querySelectorAll('.edit-icon').forEach(icon => icon.remove());
             document.body.classList.remove('delete-mode-active', 'rename-mode-active', 'hide-mode-active');
 
-            if (!currentEditingMode) {
-                return;
-            }
+            if (!currentEditingMode) return;
 
             document.body.classList.add(`${currentEditingMode}-mode-active`);
-
             const items = document.querySelectorAll('#side-nav li');
             items.forEach(li => {
                 const icon = document.createElement('span');
@@ -154,9 +169,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 });
 
                 const target = li.querySelector(':scope > a, :scope > .category-toggle');
-                if (target) {
-                    target.prepend(icon);
-                }
+                if (target) target.prepend(icon);
             });
         }
 
@@ -171,16 +184,25 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             } else if (mode === 'rename') {
                 const target = li.querySelector(':scope > a, :scope > .category-toggle');
-                const newName = prompt('Entrez le nouveau nom :', target.textContent);
+                const icon = target.querySelector('.edit-icon');
+
+                if (icon) {
+                    icon.remove();
+                }
+
+                const currentName = target.textContent.trim();
+                const newName = prompt('Entrez le nouveau nom :', currentName);
+
                 if (newName && newName.trim() !== '') {
                     target.textContent = newName.trim();
                     saveWiki();
                 }
+
+                updateNavItemsUI(); // Redraw all icons to ensure consistency
             } else if (mode === 'hide') {
                 const isHidden = li.classList.toggle('hidden-item');
                 updateHiddenItems(id, isHidden);
                 saveWiki();
-                // Update icon state
                 const icon = li.querySelector('.hide-icon i');
                 if (icon) {
                     icon.classList.toggle('fa-eye', !isHidden);
@@ -190,19 +212,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         function updateEditorPanelUI() {
-            const selectionControls = document.getElementById('item-selection-controls');
-            const addControls = document.getElementById('add-item-controls');
-
-            // Reset buttons text and state
+            [renameBtn, deleteBtn, toggleHideBtn].forEach(btn => btn.classList.remove('active'));
             renameBtn.textContent = 'Renommer';
             deleteBtn.textContent = 'Supprimer';
             toggleHideBtn.textContent = 'Cacher/Afficher';
-            [renameBtn, deleteBtn, toggleHideBtn].forEach(btn => btn.classList.remove('active'));
+            createEditBtn.disabled = false;
 
             if (currentEditingMode) {
-                selectionControls.style.display = 'none';
-                addControls.style.display = 'none';
-
+                createEditBtn.disabled = true;
                 if (currentEditingMode === 'delete') {
                     deleteBtn.textContent = 'Annuler';
                     deleteBtn.classList.add('active');
@@ -213,106 +230,114 @@ document.addEventListener('DOMContentLoaded', async function() {
                     toggleHideBtn.textContent = 'Terminer';
                     toggleHideBtn.classList.add('active');
                 }
+            }
+        }
+
+        function renderWorkflow(state) {
+            workflowHistory.push(state);
+            workflowView.innerHTML = '';
+            mainView.classList.add('hidden');
+            workflowView.classList.remove('hidden');
+
+            const backBtn = document.createElement('button');
+            backBtn.textContent = 'Retour';
+            backBtn.addEventListener('click', () => {
+                workflowHistory.pop(); // Remove current state
+                const prevState = workflowHistory.pop(); // Get previous state
+                if (prevState) {
+                    renderWorkflow(prevState);
+                } else {
+                    workflowView.classList.add('hidden');
+                    mainView.classList.remove('hidden');
+                }
+            });
+            workflowView.appendChild(backBtn);
+
+            const { level, parentId, parentName } = state;
+
+            if (parentName) {
+                const title = document.createElement('h4');
+                title.textContent = `Dans: ${parentName}`;
+                workflowView.appendChild(title);
+            }
+
+            const actions = {
+                chapter: { create: 'chapitre', edit: 'chapitre' },
+                subchapter: { create: 'sous-chapitre', edit: 'sous-chapitre' },
+                item: { create: 'élément', edit: 'élément' }
+            };
+
+            const createBtn = document.createElement('button');
+            createBtn.textContent = `Créer un nouveau ${actions[level].create}`;
+            createBtn.addEventListener('click', () => handleCreate(level, parentId));
+            workflowView.appendChild(createBtn);
+
+            if (level !== 'item') { // Cannot edit 'elements' to add children
+                const editBtn = document.createElement('button');
+                editBtn.textContent = `Editer un ${actions[level].edit}`;
+                editBtn.addEventListener('click', () => renderSelection(level, parentId));
+                workflowView.appendChild(editBtn);
+            }
+        }
+
+        function renderSelection(level, parentId) {
+            workflowHistory.push({ level, parentId }); // Save current state for back button
+            workflowView.innerHTML = '';
+
+            const backBtn = document.createElement('button');
+            backBtn.textContent = 'Retour';
+            backBtn.addEventListener('click', () => {
+                workflowHistory.pop();
+                const prevState = workflowHistory.pop();
+                renderWorkflow(prevState);
+            });
+            workflowView.appendChild(backBtn);
+
+            const listContainer = document.createElement('div');
+            const selector = parentId ? `li[data-id="${parentId}"] > ul > li` : '#side-nav > ul > li';
+            document.querySelectorAll(selector).forEach(li => {
+                const target = li.querySelector(':scope > .category-toggle');
+                 if (!target) return;
+
+                const itemBtn = document.createElement('button');
+                itemBtn.textContent = target.textContent.trim();
+                itemBtn.addEventListener('click', () => {
+                    const nextLevel = level === 'chapter' ? 'subchapter' : 'item';
+                    renderWorkflow({ level: nextLevel, parentId: li.dataset.id, parentName: target.textContent.trim() });
+                });
+                listContainer.appendChild(itemBtn);
+            });
+            workflowView.appendChild(listContainer);
+        }
+
+        function handleCreate(type, parentId) {
+            const name = prompt(`Nom du nouvel ${type}:`);
+            if (!name || name.trim() === '') return;
+
+            let parentUl;
+            if (!parentId) {
+                parentUl = document.querySelector('#side-nav > ul');
             } else {
-                selectionControls.style.display = 'block';
-                addControls.style.display = 'block';
-                refreshPanel();
-            }
-        }
-
-        function populateChapters() {
-            chapterSelect.innerHTML = '<option value="">Nouveau Chapitre</option>';
-            document.querySelectorAll('#side-nav > ul > li').forEach(li => {
-                const span = li.querySelector(':scope > .category-toggle');
-                if (span) chapterSelect.add(new Option(span.textContent, li.dataset.id));
-            });
-        }
-
-        function populateSubchapters() {
-            subchapterSelect.innerHTML = '<option value="">Nouveau Sous-chapitre</option>';
-            subchapterSelect.disabled = true;
-            const chapterId = chapterSelect.value;
-            if (!chapterId) return;
-
-            const chapterLi = document.querySelector(`#side-nav li[data-id="${chapterId}"]`);
-            chapterLi.querySelectorAll(':scope > ul > li').forEach(li => {
-                const span = li.querySelector(':scope > .category-toggle');
-                if(span) subchapterSelect.add(new Option(span.textContent, li.dataset.id));
-            });
-            subchapterSelect.disabled = false;
-        }
-
-        function populateItems() {
-            itemSelect.innerHTML = '<option value="">Nouvel Élément</option>';
-            itemSelect.disabled = true;
-            const subChapterId = subchapterSelect.value;
-            if (!subChapterId) return;
-
-            const subChapterLi = document.querySelector(`#side-nav li[data-id="${subChapterId}"]`);
-            subChapterLi.querySelectorAll(':scope > ul > li').forEach(li => {
-                const a = li.querySelector(':scope > a');
-                if(a) itemSelect.add(new Option(a.textContent, li.dataset.id));
-            });
-            itemSelect.disabled = false;
-        }
-
-        function updateButtonStates() {
-            const chapterId = chapterSelect.value;
-            const subChapterId = subchapterSelect.value;
-            const name = nameInput.value.trim();
-            addBtn.disabled = !name;
-            itemTypeSelect.disabled = !(chapterId && !subChapterId);
-        }
-
-        chapterSelect.addEventListener('change', () => {
-            populateSubchapters();
-            populateItems();
-            updateButtonStates();
-        });
-
-        subchapterSelect.addEventListener('change', () => {
-            populateItems();
-            updateButtonStates();
-        });
-
-        itemSelect.addEventListener('change', updateButtonStates);
-        nameInput.addEventListener('input', updateButtonStates);
-
-        addBtn.addEventListener('click', () => {
-            const name = nameInput.value.trim();
-            if (!name) return;
-
-            const chapterId = chapterSelect.value;
-            const subChapterId = subchapterSelect.value;
-            let parentLi, type;
-
-            if (!chapterId) {
-                parentLi = document.getElementById('side-nav');
-                type = 'chapter';
-            } else if (!subChapterId) {
-                parentLi = document.querySelector(`#side-nav li[data-id="${chapterId}"]`);
-                type = itemTypeSelect.value;
-            } else {
-                parentLi = document.querySelector(`#side-nav li[data-id="${subChapterId}"]`);
-                type = 'item';
+                const parentLi = document.querySelector(`li[data-id="${parentId}"]`);
+                parentUl = parentLi.querySelector(':scope > ul');
+                if (!parentUl) {
+                    parentUl = document.createElement('ul');
+                    parentUl.className = 'submenu open';
+                    parentLi.appendChild(parentUl);
+                    const toggle = parentLi.querySelector('.category-toggle');
+                    if (toggle) toggle.classList.add('open');
+                }
             }
 
-            let parentUl = parentLi.querySelector(':scope > ul');
-            if (!parentUl) {
-                parentUl = document.createElement('ul');
-                parentUl.className = 'submenu open';
-                parentLi.appendChild(parentUl);
-                const toggle = parentLi.querySelector('.category-toggle');
-                if (toggle) toggle.classList.add('open');
-            }
-            parentUl.appendChild(createNavItem(name, type));
+            const navItemType = (type === 'item') ? 'item' : 'sub-chapter'; // Simplification
+            parentUl.appendChild(createNavItem(name, navItemType));
             saveWiki();
-            refreshPanel();
-        });
 
-        deleteBtn.addEventListener('click', () => toggleEditingMode('delete'));
-        renameBtn.addEventListener('click', () => toggleEditingMode('rename'));
-        toggleHideBtn.addEventListener('click', () => toggleEditingMode('hide'));
+            // Return to main editor view
+            workflowView.classList.add('hidden');
+            mainView.classList.remove('hidden');
+            workflowHistory = [];
+        }
 
         function createNavItem(name, type) {
             const li = document.createElement('li');
@@ -327,22 +352,21 @@ document.addEventListener('DOMContentLoaded', async function() {
                 span.className = 'category-toggle';
                 span.textContent = name;
                 li.appendChild(span);
-                const ul = document.createElement('ul');
+                 const ul = document.createElement('ul');
                 ul.className = 'submenu';
                 li.appendChild(ul);
             }
             return li;
         }
 
-        function refreshPanel() {
-            populateChapters();
-            populateSubchapters();
-            populateItems();
-            nameInput.value = '';
-            updateButtonStates();
-        }
+        createEditBtn.addEventListener('click', () => {
+            workflowHistory = [];
+            renderWorkflow({ level: 'chapter' });
+        });
 
-        refreshPanel();
+        deleteBtn.addEventListener('click', () => toggleEditingMode('delete'));
+        renameBtn.addEventListener('click', () => toggleEditingMode('rename'));
+        toggleHideBtn.addEventListener('click', () => toggleEditingMode('hide'));
     }
 
     function addTableDeleteButtons() {
