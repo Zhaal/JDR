@@ -20,6 +20,46 @@
                 <button id="save-button">Sauvegarder</button>
                 <button id="logout-button">Se déconnecter et sauvegarder</button>
             </div>
+            <div id="editor-panel" class="hidden">
+                <h3>Éditeur de Navigation</h3>
+                <div id="editor-controls">
+                    <div class="control-group">
+                        <label for="chapter-select">Chapitre:</label>
+                        <select id="chapter-select">
+                            <option value="">Nouveau Chapitre</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="subchapter-select">Sous-chapitre:</label>
+                        <select id="subchapter-select" disabled>
+                            <option value="">Nouveau Sous-chapitre</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="item-select">Élément:</label>
+                        <select id="item-select" disabled>
+                            <option value="">Nouvel Élément</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="item-type-select">Type (si sous-chapitre est vide):</label>
+                        <select id="item-type-select" disabled>
+                            <option value="sub-chapter">Sous-chapitre</option>
+                            <option value="item">Élément</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="item-name">Nom:</label>
+                        <input type="text" id="item-name" placeholder="Nom de l'élément">
+                    </div>
+                    <div class="action-buttons">
+                        <button id="add-btn">Ajouter</button>
+                        <button id="rename-btn" disabled>Renommer</button>
+                        <button id="delete-btn" disabled>Supprimer</button>
+                        <button id="toggle-hide-btn" disabled>Cacher/Afficher</button>
+                    </div>
+                </div>
+            </div>
         </header>
         <div class="main-body">
             <aside id="sidebar">
