@@ -562,33 +562,39 @@
     }
   ],
   "sideNavDM": [
-    { "id": "200", "title": "L'opposition", "type": "item", "children": [] },
-    { "id": "201", "title": "Les rencontres", "type": "item", "children": [] },
-    { "id": "202", "title": "L'expérience", "type": "item", "children": [] },
     {
-      "id": "203",
-      "title": "Les trésors",
+      "id": "200",
+      "title": "L'opposition",
       "type": "chapter",
       "children": [
-        { "id": "204", "title": "Gemmes et bijoux", "type": "item", "children": [] },
-        { "id": "205", "title": "Objets d'art", "type": "item", "children": [] },
-        { "id": "206", "title": "Générateur aléatoire de trésors", "type": "item", "children": [] }
+        { "id": "201", "title": "Les rencontres", "type": "item", "children": [] },
+        { "id": "202", "title": "L'expérience", "type": "item", "children": [] },
+        {
+          "id": "203",
+          "title": "Les trésors",
+          "type": "chapter",
+          "children": [
+            { "id": "204", "title": "Gemmes et bijoux", "type": "item", "children": [] },
+            { "id": "205", "title": "Objets d'art", "type": "item", "children": [] },
+            { "id": "206", "title": "Générateur aléatoire de trésors", "type": "item", "children": [] }
+          ]
+        },
+        { "id": "207", "title": "Lire le profil des monstres", "type": "item", "children": [] },
+        { "id": "208", "title": "Liste alphabétique des monstres", "type": "item", "children": [] },
+        { "id": "209", "title": "Familles de monstres", "type": "item", "children": [] },
+        { "id": "210", "title": "Types et sous-types de créatures", "type": "item", "children": [] },
+        { "id": "211", "title": "Règles de monstres universelles", "type": "item", "children": [] },
+        { "id": "212", "title": "Capacités spéciales", "type": "item", "children": [] },
+        { "id": "213", "title": "Archétypes de créature", "type": "item", "children": [] },
+        { "id": "214", "title": "Galerie de PNJ", "type": "item", "children": [] },
+        { "id": "215", "title": "Classes de PNJ", "type": "item", "children": [] },
+        { "id": "216", "title": "Apparitions", "type": "item", "children": [] },
+        { "id": "217", "title": "Afflictions", "type": "item", "children": [] },
+        { "id": "218", "title": "Courses-poursuites", "type": "item", "children": [] },
+        { "id": "219", "title": "États préjudiciables", "type": "item", "children": [] },
+        { "id": "220", "title": "Plaies magiques (descriptions individuelles)", "type": "item", "children": [] }
       ]
     },
-    { "id": "207", "title": "Lire le profil des monstres", "type": "item", "children": [] },
-    { "id": "208", "title": "Liste alphabétique des monstres", "type": "item", "children": [] },
-    { "id": "209", "title": "Familles de monstres", "type": "item", "children": [] },
-    { "id": "210", "title": "Types et sous-types de créatures", "type": "item", "children": [] },
-    { "id": "211", "title": "Règles de monstres universelles", "type": "item", "children": [] },
-    { "id": "212", "title": "Capacités spéciales", "type": "item", "children": [] },
-    { "id": "213", "title": "Archétypes de créature", "type": "item", "children": [] },
-    { "id": "214", "title": "Galerie de PNJ", "type": "item", "children": [] },
-    { "id": "215", "title": "Classes de PNJ", "type": "item", "children": [] },
-    { "id": "216", "title": "Apparitions", "type": "item", "children": [] },
-    { "id": "217", "title": "Afflictions", "type": "item", "children": [] },
-    { "id": "218", "title": "Courses-poursuites", "type": "item", "children": [] },
-    { "id": "219", "title": "États préjudiciables", "type": "item", "children": [] },
-    { "id": "220", "title": "Plaies magiques (descriptions individuelles)", "type": "item", "children": [] },
     {
       "id": "221",
       "title": "Les outils de création",
