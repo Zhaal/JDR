@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     assignNavIds();
     loadHiddenItems();
     initializeNavigation();
+    initializeSearch();
 
     const loginBtn = document.getElementById('login-button');
     if (loginBtn) {
@@ -829,6 +830,62 @@ document.addEventListener('DOMContentLoaded', async function() {
             hidden = hidden.filter(item => item !== id);
         }
         localStorage.setItem('hiddenItems', JSON.stringify(hidden));
+    }
+
+    function initializeSearch() {
+        const searchBar = document.getElementById('search-bar');
+        const searchResults = document.getElementById('search-results');
+
+        if (!searchBar || !searchResults) return;
+
+        searchBar.addEventListener('input', () => {
+            const query = searchBar.value.toLowerCase();
+            searchResults.innerHTML = '';
+
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const allNavLinks = Array.from(document.querySelectorAll('#side-nav a'));
+            const results = [];
+
+            allNavLinks.forEach(link => {
+                const li = link.closest('li');
+                const pageId = li.dataset.id;
+                const title = link.textContent.toLowerCase();
+                const content = (wikiPages[pageId] || '').toLowerCase();
+
+                if (title.includes(query) || content.includes(query)) {
+                    results.push({ id: pageId, title: link.textContent });
+                }
+            });
+
+            if (results.length > 0) {
+                results.forEach(result => {
+                    const resultItem = document.createElement('a');
+                    resultItem.href = '#';
+                    resultItem.textContent = result.title;
+                    resultItem.dataset.id = result.id;
+                    resultItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        loadPage(result.id);
+                        searchResults.style.display = 'none';
+                        searchBar.value = '';
+                    });
+                    searchResults.appendChild(resultItem);
+                });
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchResults.contains(e.target) && e.target !== searchBar) {
+                searchResults.style.display = 'none';
+            }
+        });
     }
 });
 
