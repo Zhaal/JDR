@@ -649,12 +649,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     async function loadSavedWiki() {
-        const sideNavContainer = document.getElementById('side-nav');
+        const playersNavContainer = document.getElementById('players-nav');
+        const dmNavContainer = document.getElementById('dm-nav');
 
-        const renderNav = (navData) => {
-            const existingUl = sideNavContainer.querySelector('ul');
+        const renderNav = (navData, container) => {
+            const existingUl = container.querySelector('ul');
             if (existingUl) existingUl.remove();
-            renderSideNav(navData, sideNavContainer);
+            renderSideNav(navData, container);
         };
 
         const loadContent = (pages) => {
@@ -667,11 +668,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             const response = await fetch('data/wiki.json', { cache: 'no-cache' });
             if (response.ok) {
                 const data = await response.json();
-                if (data.sideNav) {
-                    renderNav(data.sideNav);
+                if (data.sideNav || data.sideNavDM) {
+                    if (data.sideNav) renderNav(data.sideNav, playersNavContainer);
+                    if (data.sideNavDM) renderNav(data.sideNavDM, dmNavContainer);
                 } else {
                     const savedNav = localStorage.getItem('sideNav');
-                    if (savedNav) renderNav(JSON.parse(savedNav));
+                    if (savedNav) {
+                        const parsed = JSON.parse(savedNav);
+                        renderNav(parsed.players || [], playersNavContainer);
+                        renderNav(parsed.dms || [], dmNavContainer);
+                    }
                 }
                 loadContent(data.pages);
 
@@ -687,7 +693,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const savedNav = localStorage.getItem('sideNav');
         if (savedNav) {
             try {
-                renderNav(JSON.parse(savedNav));
+                const parsed = JSON.parse(savedNav);
+                renderNav(parsed.players || [], playersNavContainer);
+                renderNav(parsed.dms || [], dmNavContainer);
             } catch (jsonError) {
                 console.error("Could not parse sideNav from localStorage", jsonError);
             }
@@ -718,7 +726,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const id = li.dataset.id;
             const target = li.querySelector(':scope > .category-toggle, :scope > a');
             const title = target.textContent.trim();
-            const type = target.matches('a') ? 'item' : (li.parentElement.parentElement.id === 'side-nav' ? 'chapter' : 'sub-chapter');
+            const parentId = li.parentElement.parentElement.id;
+            const type = target.matches('a') ? 'item' : (['side-nav', 'players-nav', 'dm-nav'].includes(parentId) ? 'chapter' : 'sub-chapter');
             const children = buildSideNavJson(li);
             nodes.push({ id, title, type, children });
         });
@@ -726,7 +735,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function saveSideNav() {
-        const sideNavData = buildSideNavJson(document.getElementById('side-nav'));
+        const sideNavData = {
+            players: buildSideNavJson(document.getElementById('players-nav')),
+            dms: buildSideNavJson(document.getElementById('dm-nav'))
+        };
         localStorage.setItem('sideNav', JSON.stringify(sideNavData));
         localStorage.setItem('wikiPages', JSON.stringify(wikiPages));
     }
@@ -784,7 +796,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         saveMainContent();
 
         const data = {
-            sideNav: buildSideNavJson(document.getElementById('side-nav')),
+            sideNav: buildSideNavJson(document.getElementById('players-nav')),
+            sideNavDM: buildSideNavJson(document.getElementById('dm-nav')),
             pages: wikiPages,
             hiddenItems: JSON.parse(localStorage.getItem('hiddenItems') || '[]')
         };
