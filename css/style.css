@@ -479,3 +479,53 @@ body.editor-mode #side-nav li:not(.hidden-item) > a {
 .hide-icon:hover {
     color: #107586;
 }
+
+#search-container {
+    position: relative;
+    margin: 10px 0;
+    max-width: 400px; /* Or as needed */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#search-bar {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px; /* Rounded corners */
+    box-sizing: border-box;
+}
+
+#search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1001;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#search-results a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+#search-results a:last-child {
+    border-bottom: none;
+}
+
+#search-results a:hover {
+    background-color: #f2f2f2;
+}
