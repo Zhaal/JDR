@@ -1,33 +1,64 @@
+:root {
+    /* Palette de Couleurs */
+    --color-parchment: #F1EAD7;
+    --color-parchment-dark: #D8CDBA;
+    --color-text-main: #333333;
+    --color-accent-brass: #B08D57;
+    --color-accent-gm-red: #8B0000;
+    --color-background-dark: #1a1a1a; /* Gris anthracite très sombre */
+    --color-border-metal: #545454;
+    --color-white: #ffffff;
+
+    /* Typographie */
+    --font-title: 'Playfair Display', serif;
+    --font-subtitle: 'Lora', serif;
+    --font-body: 'Merriweather', serif;
+
+    /* Textures (URLs de placeholders, peuvent être améliorées) */
+    --texture-parchment: url('https://www.transparenttextures.com/patterns/old-paper.png');
+    --texture-dark-wood: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+}
+
 /* General body styling */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-body);
     line-height: 1.6;
     margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
+    padding: 20px; /* Ajout d'un padding pour voir le fond */
+    background-color: var(--color-background-dark);
+    background-image: var(--texture-dark-wood);
+    color: var(--color-text-main);
 }
 
 .container {
-    max-width: 1280px; /* Wider for sidebar */
+    max-width: 1280px;
     margin: 20px auto;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    background-color: var(--color-parchment);
+    background-image: var(--texture-parchment);
+    border: 1px solid #a29988;
     padding: 30px;
+    box-shadow: 5px 5px 20px rgba(0,0,0,0.6);
+    border-radius: 2px; /* Slight rounding */
 }
 
 /* Header styling */
 header {
-    color: #000;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #a7d7f9;
+    color: var(--color-text-main);
+    padding-bottom: 1.5rem;
     text-align: center;
     margin-bottom: 20px;
     position: relative;
+    /* Decorative border using a pseudo-element */
+    border-bottom: 2px solid var(--color-accent-brass);
+    box-shadow: 0 2px 5px -2px rgba(0,0,0,0.5);
 }
 
 header h1 {
     margin: 0;
-    font-size: 2.5em;
+    font-family: var(--font-title);
+    font-size: 3.5em; /* Larger title */
+    color: var(--color-text-main);
+    text-shadow: 1px 1px 0px var(--color-parchment-dark), 2px 2px 3px rgba(0,0,0,0.3);
 }
 
 /* --- Layout --- */
@@ -47,19 +78,45 @@ header h1 {
 
 /* --- Sidebar Navigation --- */
 #side-nav {
-    background-color: #f8f9fa;
+    background-color: transparent;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
     height: 100%;
 }
 
 #side-nav h3 {
-    font-size: 1.2em;
-    color: #333;
+    font-family: var(--font-subtitle);
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--color-text-main);
+    text-align: center;
     margin-top: 0;
-    border-bottom: 1px solid #ccc;
+    margin-bottom: 25px; /* Increased margin for flourish */
     padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-accent-brass);
+    position: relative;
+}
+
+/* Ornate flourish for section titles */
+#side-nav h3::after {
+    content: '§';
+    display: block;
+    text-align: center;
+    font-size: 1.2em;
+    color: var(--color-accent-brass);
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-parchment);
+    padding: 0 10px;
+}
+
+/* Specific style for GM section */
+#dm-nav {
+    /* A subtle border to hint at the crimson theme */
+    border-left: 3px double var(--color-accent-gm-red);
+    padding-left: 10px;
+    margin-top: 20px;
 }
 
 #side-nav ul {
@@ -69,63 +126,89 @@ header h1 {
 }
 
 #side-nav ul li {
-    margin: 5px 0;
+    margin: 2px 0;
 }
 
 /* Style for the clickable category headers */
 #side-nav .category-toggle {
-    font-weight: bold;
+    font-family: var(--font-body);
+    font-weight: 700; /* Bold */
     cursor: pointer;
     display: block;
     padding: 8px 12px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease-in-out;
-    position: relative; /* For the arrow */
-    padding-left: 20px; /* Space for the arrow */
+    border-radius: 2px;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    padding-left: 30px; /* Space for the icon */
+    color: var(--color-text-main);
 }
 
-#side-nav .category-toggle:hover {
-    background-color: #e9ecef;
-}
-
-/* Arrow indicator for expandable categories */
+/* Custom icon for expandable categories */
 #side-nav .category-toggle::before {
-    content: '▶';
-    font-size: 0.8em;
+    font-family: "Font Awesome 6 Free";
+    content: '\f02d'; /* fa-book */
+    font-weight: 900; /* Solid */
     position: absolute;
-    left: 5px;
-    top: 12px;
-    transition: transform 0.2s ease-in-out;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.2s ease-in-out;
+    color: var(--color-text-main);
+}
+
+/* Style for open categories */
+#side-nav .category-toggle.open {
+    color: var(--color-accent-brass);
 }
 
 #side-nav .category-toggle.open::before {
-    transform: rotate(90deg);
+    content: '\f518'; /* fa-book-open */
+    color: var(--color-accent-brass);
 }
 
 
 /* Style for regular links */
 #side-nav a {
+    font-family: var(--font-body);
     text-decoration: none;
-    color: #0645ad;
+    color: #4a4a4a;
     display: block;
-    padding: 6px 12px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease-in-out;
+    padding: 6px 12px 6px 30px; /* Indented like categories */
+    border-radius: 2px;
+    transition: all 0.2s ease-in-out;
+    position: relative;
 }
 
-#side-nav a:hover {
-    background-color: #e9ecef;
-    text-decoration: underline;
+#side-nav a::before {
+    content: "—"; /* Dash for list items */
+    position: absolute;
+    left: 12px;
+    color: var(--color-accent-brass);
 }
+
+
+/* Hover effect for both toggles and links */
+#side-nav .category-toggle:hover,
+#side-nav a:hover {
+    background-color: rgba(176, 141, 87, 0.15);
+    color: var(--color-accent-brass);
+}
+
+/* Specific hover for GM section links */
+#dm-nav a:hover, #dm-nav .category-toggle:hover {
+    color: var(--color-accent-gm-red);
+    background-color: rgba(139, 0, 0, 0.1);
+}
+
 
 /* Style for nested lists (submenus) */
 #side-nav .submenu {
     padding-left: 15px; /* Indentation */
-    border-left: 2px solid #e0e0e0;
-    margin-left: 10px;
-    /* Hide by default for JS toggle */
+    border-left: 1px solid var(--color-accent-brass);
+    margin-left: 15px;
     display: none;
-    margin-top: 8px;
+    margin-top: 5px;
+    background: rgba(0,0,0,0.02);
 }
 
 .image-container {
@@ -166,11 +249,22 @@ header h1 {
 
 /* --- Main Content --- */
 #main-content h2 {
-    font-size: 1.8em;
-    color: #000;
-    border-bottom: 1px solid #a2a9b1;
+    font-family: var(--font-title);
+    font-size: 2.8em;
+    color: var(--color-text-main);
+    border-bottom: 1px solid var(--color-accent-brass);
     padding-bottom: 0.3em;
     margin-top: 0;
+    margin-bottom: 0.8em;
+    text-align: center;
+    text-shadow: 1px 1px 0px var(--color-parchment-dark);
+}
+
+#main-content p {
+    font-size: 1.1em;
+    line-height: 1.7;
+    text-align: justify;
+    margin-bottom: 1.2em;
 }
 
 /* --- Footer --- */
@@ -184,23 +278,47 @@ footer {
 }
 
 #login-button {
-    padding: 5px 10px;
+    font-family: var(--font-subtitle);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 10px;
     cursor: pointer;
     width: 100%;
     box-sizing: border-box;
+    background-color: var(--color-accent-brass);
+    color: var(--color-white);
+    border: 1px outset #a5885c;
+    border-radius: 2px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+#login-button:hover {
+    background-color: #c9a679; /* Lighter brass */
+    box-shadow: 0 0 5px rgba(255, 223, 126, 0.5);
 }
 
 #login-area {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     width: 200px;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.05);
+    border: 1px solid var(--color-border-metal);
+    border-radius: 3px;
 }
 
 #login-area input {
     width: 100%;
     box-sizing: border-box;
-    padding: 5px;
+    padding: 8px;
+    background-color: var(--color-parchment-dark);
+    border: 1px solid var(--color-border-metal);
+    border-radius: 2px;
+    font-family: var(--font-body);
+    color: var(--color-text-main);
 }
 
 #login-area div {
