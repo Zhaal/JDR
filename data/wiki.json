@@ -559,6 +559,540 @@
           "children": []
         }
       ]
+    },
+    {
+      "id": "1756750000000",
+      "title": "Pour les Maîtres du Jeu...",
+      "type": "chapter",
+      "children": [
+        {
+          "id": "1756750000001",
+          "title": "L'opposition",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "1756750000002",
+              "title": "Les rencontres",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000003",
+              "title": "L'expérience",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000004",
+              "title": "Les trésors",
+              "type": "sub-chapter",
+              "children": [
+                {
+                  "id": "1756750000005",
+                  "title": "Gemmes et bijoux",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000006",
+                  "title": "Objets d'art",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000007",
+                  "title": "Générateur aléatoire de trésors [+]",
+                  "type": "item",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "1756750000008",
+              "title": "Lire le profil des monstres",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000009",
+              "title": "Liste alphabétique des monstres",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000010",
+              "title": "Familles de monstres",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000011",
+              "title": "Types et sous-types de créatures",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000012",
+              "title": "Règles de monstres universelles",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000013",
+              "title": "Capacités spéciales",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000014",
+              "title": "Archétypes de créature",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000015",
+              "title": "Galerie de PNJ",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000016",
+              "title": "Classes de PNJ",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000017",
+              "title": "Apparitions",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000018",
+              "title": "Afflictions",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000019",
+              "title": "Courses-poursuites",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000020",
+              "title": "États préjudiciables",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000021",
+              "title": "Plaies magiques (descriptions individuelles)",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "1756750000022",
+          "title": "Les outils de création",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "1756750000023",
+              "title": "Créer une race",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000024",
+              "title": "Créer une classe",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000025",
+              "title": "Créer un archétype",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000026",
+              "title": "Créer une classe de prestige",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000027",
+              "title": "Créer ou modifier un monstre",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000028",
+              "title": "Créer une créature artificielle",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000029",
+              "title": "Créer des PNJ",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000030",
+              "title": "Créer un sort",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000031",
+              "title": "Créer un monde",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000032",
+              "title": "Créer une campagne ouverte",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "1756750000033",
+          "title": "L'environnement",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "1756750000034",
+              "title": "Donjons",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000035",
+              "title": "Pièges",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000036",
+              "title": "Aventures en extérieur",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000037",
+              "title": "Milieu aquatique",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000038",
+              "title": "Milieu urbain",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000039",
+              "title": "Climat",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000040",
+              "title": "Plans",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000041",
+              "title": "Dangers naturels",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000042",
+              "title": "Aventures nautiques",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000043",
+              "title": "Catastrophes",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000044",
+              "title": "Coût de la vie",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000045",
+              "title": "Dangers inhabituels",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000046",
+              "title": "Magie primordiale",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000047",
+              "title": "Villes et communautés",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "1756750000048",
+          "title": "Précisions, aides et liens externes",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "1756750000049",
+              "title": "FAQ officielles (site Paizo ↗)",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000050",
+              "title": "FAQ non officielle",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000051",
+              "title": "Glossaire VO/VF à jour ↗ (archétypes, armes, armures, dons, équipement, monstres, PNJ, sorts, etc.)",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000052",
+              "title": "Glossaires obsolètes",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000053",
+              "title": "Aides de jeu",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000054",
+              "title": "Aperçu de Pathfinder RPG",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000055",
+              "title": "Cartes Paizo : Fumbles et Coups Critiques",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000056",
+              "title": "Choix des caractéristiques",
+              "type": "item",
+              "children": []
+            },
+            {
+              "id": "1756750000057",
+              "title": "Publications relatives à Pathfinder RPG",
+              "type": "item",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "1756750000058",
+          "title": "Les sous-systèmes",
+          "type": "sub-chapter",
+          "children": [
+            {
+              "id": "1756750000059",
+              "title": "GC — Gestion de groupe, royaumes, guerre et exploration",
+              "type": "sub-chapter",
+              "children": [
+                {
+                  "id": "1756750000060",
+                  "title": "Intermèdes",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000061",
+                  "title": "Systèmes de campagne",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000062",
+                  "title": "Royaumes et guerre",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000063",
+                  "title": "Combat de masse",
+                  "type": "item",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "1756750000064",
+              "title": "AI — Aventures sociales",
+              "type": "sub-chapter",
+              "children": [
+                {
+                  "id": "1756750000065",
+                  "title": "Maîtriser l'intrigue",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000066",
+                  "title": "Conflits sociaux",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000067",
+                  "title": "Duels verbaux",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000068",
+                  "title": "Compétences en conflit",
+                  "type": "item",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "1756750000069",
+              "title": "AO — Aventures occultes",
+              "type": "sub-chapter",
+              "children": [
+                {
+                  "id": "1756750000070",
+                  "title": "Présentation",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000071",
+                  "title": "Mener une partie occulte",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000072",
+                  "title": "Règles techniques",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000073",
+                  "title": "Récompenses occultes",
+                  "type": "item",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "1756750000074",
+              "title": "PU — Unchained (systèmes repensés et variantes)",
+              "type": "sub-chapter",
+              "children": [
+                {
+                  "id": "1756750000075",
+                  "title": "Présentation",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000076",
+                  "title": "Classes unchained",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000077",
+                  "title": "Compétences et options unchained",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000078",
+                  "title": "Mécanismes de jeu unchained",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000079",
+                  "title": "Magie unchained",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000080",
+                  "title": "Création de monstres simplifiée",
+                  "type": "item",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "1756750000081",
+              "title": "CMY — Aventures mythiques",
+              "type": "sub-chapter",
+              "children": [
+                {
+                  "id": "1756750000082",
+                  "title": "Présentation (glossaire mythique)",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000083",
+                  "title": "Mener une partie mythique",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000084",
+                  "title": "Création d’un personnage mythique",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000085",
+                  "title": "Options de personnage mythiques",
+                  "type": "item",
+                  "children": []
+                },
+                {
+                  "id": "1756750000086",
+                  "title": "Monstres mythiques",
+                  "type": "item",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "pages": {
