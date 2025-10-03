@@ -11,24 +11,176 @@ document.addEventListener('DOMContentLoaded', async function() {
     let wikiPages = {};
     let currentPageId = null;
     let setupNavSelectionHandler = null;
+    let authToken = null;
+    let currentUser = null;
+
+    // Check for existing session
+    await checkAuthSession();
 
     await loadSavedWiki();
     assignNavIds();
     loadHiddenItems();
     initializeNavigation();
     initializeSearch();
+    initializeMobileMenu();
+
+    // Remove loading state
+    document.body.classList.remove('loading');
 
     const loginBtn = document.getElementById('login-button');
     if (loginBtn) {
-        loginBtn.addEventListener('click', () => {
-            const user = document.getElementById('login-username').value;
-            const pass = document.getElementById('login-password').value;
-            if (user === 'admin' && pass === 'jdr') {
-                enableEditing();
-            } else {
-                alert('Identifiants invalides');
+        loginBtn.addEventListener('click', handleLogin);
+    }
+
+    // Allow login with Enter key
+    const loginPassword = document.getElementById('login-password');
+    if (loginPassword) {
+        loginPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
             }
         });
+    }
+
+    async function handleLogin() {
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+        const loginBtn = document.getElementById('login-button');
+        const btnText = loginBtn.querySelector('.btn-text');
+        const btnSpinner = loginBtn.querySelector('.btn-spinner');
+        const errorDiv = document.getElementById('login-error');
+
+        if (!username || !password) {
+            showError('Veuillez remplir tous les champs');
+            return;
+        }
+
+        // Show loading state
+        loginBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnSpinner.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+
+        try {
+            const response = await fetch('/.netlify/functions/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'login',
+                    username,
+                    password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                authToken = data.token;
+                currentUser = data.username;
+                localStorage.setItem('authToken', authToken);
+                localStorage.setItem('username', currentUser);
+                enableEditing();
+                updateUserInfo();
+            } else {
+                showError(data.error || 'Identifiants invalides');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showError('Erreur de connexion. Veuillez réessayer.');
+        } finally {
+            loginBtn.disabled = false;
+            btnText.style.display = 'inline';
+            btnSpinner.classList.add('hidden');
+        }
+    }
+
+    async function checkAuthSession() {
+        const token = localStorage.getItem('authToken');
+        const username = localStorage.getItem('username');
+
+        if (!token || !username) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/.netlify/functions/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'verify',
+                    token
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.valid) {
+                authToken = token;
+                currentUser = username;
+                enableEditing();
+                updateUserInfo();
+            } else {
+                // Token invalid or expired
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+            }
+        } catch (error) {
+            console.error('Session check error:', error);
+        }
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('login-error');
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+    }
+
+    function updateUserInfo() {
+        const loginArea = document.getElementById('login-area');
+        const userInfo = document.getElementById('user-info');
+        const usernameText = document.getElementById('username-text');
+
+        if (loginArea) loginArea.classList.add('hidden');
+        if (userInfo && usernameText) {
+            usernameText.textContent = currentUser;
+            userInfo.classList.remove('hidden');
+        }
+    }
+
+    function initializeMobileMenu() {
+        const mobileMenuBtn = document.getElementById('mobile-menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (mobileMenuBtn && sidebar) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('sidebar-open');
+                sidebar.classList.toggle('sidebar-closed');
+            });
+
+            // Close sidebar when clicking on a link (mobile)
+            sidebar.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A' && window.innerWidth <= 768) {
+                    sidebar.classList.remove('sidebar-open');
+                    sidebar.classList.add('sidebar-closed');
+                }
+            });
+
+            // Close sidebar when clicking outside (mobile)
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 &&
+                    !sidebar.contains(e.target) &&
+                    !mobileMenuBtn.contains(e.target) &&
+                    sidebar.classList.contains('sidebar-open')) {
+                    sidebar.classList.remove('sidebar-open');
+                    sidebar.classList.add('sidebar-closed');
+                }
+            });
+        }
     }
 
     const logoutBtn = document.getElementById('logout-button');
@@ -156,6 +308,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function disableEditing() {
+        const userInfo = document.getElementById('user-info');
+        if (userInfo) userInfo.classList.add('hidden');
         const loginArea = document.getElementById('login-area');
         if (loginArea) loginArea.classList.remove('hidden');
         const toolbar = document.getElementById('edit-toolbar');
@@ -178,6 +332,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (setupNavSelectionHandler) {
             setupNavSelectionHandler(false);
         }
+
+        // Clear auth data
+        authToken = null;
+        currentUser = null;
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('username');
     }
 
     function initializeEditorPanel() {

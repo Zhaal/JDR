@@ -10,18 +10,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="loading">
     <div class="container">
         <header>
-            <h1>Transcendant WIKI</h1>
+            <div class="header-content">
+                <h1>Transcendant WIKI</h1>
+                <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
             <div id="search-container">
-                <input type="text" id="search-bar" placeholder="Rechercher dans le wiki...">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-bar" placeholder="Rechercher dans le wiki...">
+                </div>
                 <div id="search-results"></div>
             </div>
             <div id="login-area">
-                <div><input type="text" id="login-username" placeholder="Identifiant"></div>
-                <div><input type="password" id="login-password" placeholder="Mot de passe"></div>
-                <button id="login-button">Connexion</button>
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="login-username" placeholder="Identifiant" autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="current-password">
+                </div>
+                <button id="login-button">
+                    <span class="btn-text">Connexion</span>
+                    <i class="fas fa-spinner fa-spin btn-spinner hidden"></i>
+                </button>
+                <div id="login-error" class="error-message hidden"></div>
+            </div>
+            <div id="user-info" class="hidden">
+                <span id="username-display"><i class="fas fa-user-circle"></i> <span id="username-text"></span></span>
             </div>
             <div id="edit-toolbar" class="hidden">
                 <button id="insert-table">Ajouter un tableau</button>
@@ -49,7 +70,7 @@
             </div>
         </header>
         <div class="main-body">
-            <aside id="sidebar">
+            <aside id="sidebar" class="sidebar-closed">
                 <nav id="side-nav">
                     <h3>POUR LES JOUEURS…</h3>
                     <button id="edit-menu-btn" class="hidden">Editer le menu</button>
